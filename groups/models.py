@@ -1,9 +1,7 @@
-from django.db import models
-import datetime
-
-
-# Create your models here.
 from faker import Faker
+from django.db import models
+
+import datetime
 
 
 class Group(models.Model):
@@ -24,7 +22,3 @@ class Group(models.Model):
                 start_year=year
             )
             gr.save()
-
-
-
-

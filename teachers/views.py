@@ -1,7 +1,4 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-
-# Create your views here.
 from webargs import fields
 from webargs.djangoparser import use_kwargs
 
