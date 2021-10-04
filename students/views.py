@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django.http import HttpResponse
-import faker
+from faker import Faker
 from webargs import fields
 from webargs.djangoparser import use_kwargs
 from students.models import Student
@@ -12,11 +12,15 @@ def hello(request):
 
 
 def generate_students(request, count=10):
-    fake = faker.Faker('ru_RU')
-    while count > 0:
-        new_student = Student(first_name=fake.first_name(), last_name=fake.last_name(), email=fake.email())
-        new_student.save()
-        count -= 1
+    faker = Faker()
+    for i in range(count):
+        st = Student(
+            first_name=faker.first_name(),
+            last_name=faker.last_name(),
+            email=faker.email(),
+            birthdate=faker.date_time_between(start_date="-30y", end_date="-18y")
+        )
+        st.save()
     return HttpResponse('SUCCESS')
 
 
@@ -50,7 +54,6 @@ def get_students(request, **params):
             q_list |= Q(first_name__icontains=param_value)
             q_list |= Q(last_name__icontains=param_value)
             q_list |= Q(email__icontains=param_value)
-            q_list |= Q(birthdate__icontains=param_value)
 
             students = students.filter(q_list)
 
