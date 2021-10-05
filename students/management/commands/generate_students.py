@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-from faker import Faker
 from students.models import Student
 
 
@@ -11,12 +10,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         count = kwargs['count']
-        faker = Faker()
-        for i in range(count):
-            st = Student(
-                first_name=faker.first_name(),
-                last_name=faker.last_name(),
-                email=faker.email(),
-                birthdate=faker.date_time_between(start_date="-30y", end_date="-18y")
-            )
-            st.save()
+        Student.generate_instances(count)
