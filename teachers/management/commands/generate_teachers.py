@@ -1,4 +1,3 @@
-import faker
 from django.core.management.base import BaseCommand
 from teachers.models import Teacher
 
@@ -11,8 +10,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         count = kwargs['count']
-        while count > 0:
-            fake = faker.Faker('ru_RU')
-            new_teacher = Teacher(first_name=fake.first_name(), last_name=fake.last_name(), faculty='IT')
-            new_teacher.save()
-            count -= 1
+        Teacher.generate_teachers(count)

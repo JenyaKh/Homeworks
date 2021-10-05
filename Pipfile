@@ -7,6 +7,8 @@ name = "pypi"
 django = "==3.2.7"
 faker = "*"
 ipython = "*"
+django-extensions = "*"
+flake8 = "*"
 
 [dev-packages]
 
