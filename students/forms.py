@@ -5,7 +5,7 @@ from django.core.validators import ValidationError
 from students.models import Student
 
 
-class StudentCreateForm(ModelForm):
+class StudentBaseForm(ModelForm):
     class Meta:
         model = Student
         fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number']
@@ -45,11 +45,18 @@ class StudentCreateForm(ModelForm):
 
     def clean_birthdate(self):
 
-        year = 365
         min_age = 18
         birthdate = self.cleaned_data['birthdate']
-        age = datetime.date.today() - birthdate
-        if age.days/year < min_age:
+        if datetime.date.today().year - birthdate.year < min_age:
             raise ValidationError('ERROR: the student must be at least 18 years old')
 
         return birthdate
+
+
+class StudentCreateForm(StudentBaseForm):
+    pass
+
+
+class StudentUpdateForm(StudentBaseForm):
+    class Meta(StudentBaseForm.Meta):
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'birthdate']
