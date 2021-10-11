@@ -34,8 +34,8 @@ class StudentCreateForm(ModelForm):
         return cleaned_data
 
     def clean_email(self):
-        domain_list = ['yandex.ru', 'yandex.com', 'yandex.ua', 'ya.ru', 'ya.com',
-                       'mail.ru', 'mail.ua', 'inbox.ru', 'list.ru', 'bk.ru', 'rambler.ru']
+        domain_list = ['@yandex.ru', '@yandex.com', '@yandex.ua', '@ya.ru', '@ya.com',
+                       '@mail.ru', '@mail.ua', '@inbox.ru', '@list.ru', '@bk.ru', '@rambler.ru']
         email = self.cleaned_data['email']
         for domain in domain_list:
             if domain in email:
