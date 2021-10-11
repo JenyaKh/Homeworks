@@ -45,11 +45,9 @@ class StudentCreateForm(ModelForm):
 
     def clean_birthdate(self):
 
-        year = 365
         min_age = 18
         birthdate = self.cleaned_data['birthdate']
-        age = datetime.date.today() - birthdate
-        if age.days/year < min_age:
+        if datetime.date.today().year - birthdate.year < min_age:
             raise ValidationError('ERROR: the student must be at least 18 years old')
 
         return birthdate
