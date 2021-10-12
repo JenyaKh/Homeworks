@@ -34,10 +34,10 @@ class StudentCreateForm(ModelForm):
         return cleaned_data
 
     def clean_email(self):
-        domain_list = ['@yandex.ru', '@yandex.com', '@yandex.ua', '@ya.ru', '@ya.com',
+        DOMAIN_LIST = ['@yandex.ru', '@yandex.com', '@yandex.ua', '@ya.ru', '@ya.com',
                        '@mail.ru', '@mail.ua', '@inbox.ru', '@list.ru', '@bk.ru', '@rambler.ru']
         email = self.cleaned_data['email']
-        for domain in domain_list:
+        for domain in DOMAIN_LIST:
             if domain in email.lower():
                 raise ValidationError(f'ERROR: it is forbidden to use the domain {domain}')
 
