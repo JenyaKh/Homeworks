@@ -1,13 +1,16 @@
 import datetime
+
+from django.core.validators import RegexValidator, MinLengthValidator
 from django.db import models
 from faker import Faker
 
 
 class Student(models.Model):
-    first_name = models.CharField(max_length=60, null=False)
-    last_name = models.CharField(max_length=80, null=False)
+    first_name = models.CharField(max_length=60, null=False, validators=[MinLengthValidator(2)])
+    last_name = models.CharField(max_length=80, null=False, validators=[MinLengthValidator(2)])
     email = models.EmailField(max_length=120, null=True)
     birthdate = models.DateField(null=True, default=datetime.date.today)
+    phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('[0-9]{10,14}$')])
 
     def __str__(self):
         return f'{self.full_name()} ({self.id})'
