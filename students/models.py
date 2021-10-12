@@ -11,6 +11,8 @@ class Student(models.Model):
     email = models.EmailField(max_length=120, null=True, unique=True)
     birthdate = models.DateField(null=True, default=datetime.date.today)
     phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('[0-9]{10,14}$')])
+    budget = models.BooleanField(null=True)
+    scholarship = models.BooleanField(null=True)
 
     def __str__(self):
         return f'{self.full_name()} ({self.id})'

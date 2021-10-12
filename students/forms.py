@@ -8,7 +8,7 @@ from students.models import Student
 class StudentBaseForm(ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number']
+        fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number', 'budget', 'scholarship']
 
     @staticmethod
     def normalize_name(name):
@@ -30,6 +30,11 @@ class StudentBaseForm(ModelForm):
         last_name = self.cleaned_data['last_name']
         if first_name == last_name:
             raise ValidationError('ERROR: First and last names can\'t be equal')
+
+        budget = self.cleaned_data['budget']
+        scholarship = self.cleaned_data['scholarship']
+        if not budget and scholarship:
+            raise ValidationError('ERROR: student can receive a scholarship only on a budget')
 
         return cleaned_data
 
@@ -59,4 +64,4 @@ class StudentCreateForm(StudentBaseForm):
 
 class StudentUpdateForm(StudentBaseForm):
     class Meta(StudentBaseForm.Meta):
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'birthdate']
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'budget', 'scholarship']

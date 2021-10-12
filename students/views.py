@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from webargs import fields
 from webargs.djangoparser import use_kwargs
 
-from students.forms import StudentCreateForm
+from students.forms import StudentCreateForm, StudentUpdateForm
 from students.models import Student
 from utils import format_records
 
@@ -67,7 +67,7 @@ def get_students(request, **params):
         else:
             students = students.filter(**{param_name: param_value})
 
-    result = format_records(students)
+    result = format_records(students, 'student-update')
 
     response = form + result
 
@@ -101,13 +101,13 @@ def update_student(request, pk):
     student = get_object_or_404(Student, id=pk)
 
     if request.method == 'POST':
-        form = StudentCreateForm(request.POST, instance=student)
+        form = StudentUpdateForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('students-list'))
 
     elif request.method == 'GET':
-        form = StudentCreateForm(instance=student)
+        form = StudentUpdateForm(instance=student)
 
     form_html = f"""
     <form method="POST">
@@ -117,3 +117,30 @@ def update_student(request, pk):
     """
 
     return HttpResponse(form_html)
+
+
+@csrf_exempt
+def delete_student(request, pk):
+
+    student = get_object_or_404(Student, id=pk)
+
+
+    if request.method == 'POST':
+        form = StudentUpdateForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('students-list'))
+
+    elif request.method == 'GET':
+        form = StudentUpdateForm(instance=student)
+
+    form_html = f"""
+    <form method="POST">
+      {form.as_p()}
+      <input type="submit" value="Save">
+    </form>
+    """
+
+    return HttpResponse(form_html)
+
+

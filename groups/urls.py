@@ -16,12 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from groups.views import create_group, get_groups
+from groups.views import create_group, get_groups, update_group
 from students.views import hello, generate_students, get_students, create_student
 from teachers.views import get_teachers, create_teacher
 
 urlpatterns = [
     path('', get_groups, name='groups-list'),
-    path('create/', create_group, name='groups-create')
+    path('create/', create_group, name='group-create'),
+    path('update/<int:pk>/', update_group, name='group-update')
 
 ]

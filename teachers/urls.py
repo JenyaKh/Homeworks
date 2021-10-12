@@ -18,11 +18,12 @@ from django.urls import path
 
 from groups.views import create_group, get_groups
 from students.views import hello, generate_students, get_students, create_student
-from teachers.views import get_teachers, create_teacher
+from teachers.views import get_teachers, create_teacher, update_teacher
 
 urlpatterns = [
 
     path('', get_teachers, name='teachers-list'),
-    path('create/', create_teacher, name='teachers-create'),
+    path('create/', create_teacher, name='teacher-create'),
+    path('update/<int:pk>/', update_teacher, name='teacher-update'),
 
 ]
