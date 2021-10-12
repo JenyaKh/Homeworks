@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from groups.forms import GroupCreateForm
@@ -21,7 +22,7 @@ def create_group(request):
         form = GroupCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/groups')
+            return HttpResponseRedirect(reverse('groups-list'))
 
     elif request.method == 'GET':
         form = GroupCreateForm()

@@ -8,7 +8,7 @@ from faker import Faker
 class Student(models.Model):
     first_name = models.CharField(max_length=60, null=False, validators=[MinLengthValidator(2)])
     last_name = models.CharField(max_length=80, null=False, validators=[MinLengthValidator(2)])
-    email = models.EmailField(max_length=120, null=True)
+    email = models.EmailField(max_length=120, null=True, unique=True)
     birthdate = models.DateField(null=True, default=datetime.date.today)
     phone_number = models.CharField(null=True, max_length=14, unique=True, validators=[RegexValidator('[0-9]{10,14}$')])
 

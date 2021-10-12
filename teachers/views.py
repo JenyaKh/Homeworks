@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from webargs import fields
 from webargs.djangoparser import use_kwargs
@@ -43,7 +44,7 @@ def create_teacher(request):
         form = TeacherCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/teachers')
+            return HttpResponseRedirect(reverse('teachers-list'))
 
     elif request.method == 'GET':
         form = TeacherCreateForm()

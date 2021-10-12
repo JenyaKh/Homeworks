@@ -80,7 +80,7 @@ def create_student(request):
         form = StudentCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/students')
+            return HttpResponseRedirect(reverse('students-list'))
 
     elif request.method == 'GET':
         form = StudentCreateForm()
