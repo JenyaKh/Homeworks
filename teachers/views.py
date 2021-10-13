@@ -7,7 +7,7 @@ from webargs.djangoparser import use_kwargs
 
 from teachers.forms import TeacherCreateForm, TeacherUpdateForm
 from teachers.models import Teacher
-from utils import format_records
+from teachers.utils import format_records
 
 
 @use_kwargs(
@@ -34,7 +34,7 @@ def get_teachers(request, **params):
     teachers = Teacher.objects.all()
     for param_name, param_value in params.items():
         teachers = teachers.filter(**{param_name: param_value})
-    result = format_records(teachers, 'teacher-update')
+    result = format_records(teachers)
 
     return HttpResponse(result)
 
@@ -45,7 +45,7 @@ def create_teacher(request):
         form = TeacherCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('teachers-list'))
+            return HttpResponseRedirect(reverse('teachers:list'))
 
     elif request.method == 'GET':
         form = TeacherCreateForm()
@@ -69,7 +69,7 @@ def update_teacher(request, pk):
         form = TeacherUpdateForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('teachers-list'))
+            return HttpResponseRedirect(reverse('teachers:list'))
 
     elif request.method == 'GET':
         form = TeacherUpdateForm(instance=student)

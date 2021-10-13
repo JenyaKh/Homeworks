@@ -5,14 +5,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 from groups.forms import GroupCreateForm, GroupUpdateForm
 from groups.models import Group
-from utils import format_records
+from groups.utils import format_records
 
 
 def get_groups(request):
 
     groups = Group.objects.all()
 
-    result = format_records(groups, 'group-update')
+    result = format_records(groups)
 
     return HttpResponse(result)
 
@@ -23,7 +23,7 @@ def create_group(request):
         form = GroupCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('groups-list'))
+            return HttpResponseRedirect(reverse('groups:list'))
 
     elif request.method == 'GET':
         form = GroupCreateForm()
@@ -47,7 +47,7 @@ def update_group(request, pk):
         form = GroupCreateForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('groups-list'))
+            return HttpResponseRedirect(reverse('groups:list'))
 
     elif request.method == 'GET':
         form = GroupUpdateForm(instance=student)

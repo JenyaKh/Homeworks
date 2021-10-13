@@ -8,7 +8,7 @@ from webargs.djangoparser import use_kwargs
 
 from students.forms import StudentCreateForm, StudentUpdateForm
 from students.models import Student
-from utils import format_records
+from students.utils import format_records
 
 
 def hello(request):
@@ -67,7 +67,7 @@ def get_students(request, **params):
         else:
             students = students.filter(**{param_name: param_value})
 
-    result = format_records(students, 'student-update')
+    result = format_records(students)
 
     response = form + result
 
@@ -80,7 +80,7 @@ def create_student(request):
         form = StudentCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('students-list'))
+            return HttpResponseRedirect(reverse('students:list'))
 
     elif request.method == 'GET':
         form = StudentCreateForm()
@@ -104,7 +104,7 @@ def update_student(request, pk):
         form = StudentUpdateForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('students-list'))
+            return HttpResponseRedirect(reverse('students:list'))
 
     elif request.method == 'GET':
         form = StudentUpdateForm(instance=student)
@@ -119,28 +119,9 @@ def update_student(request, pk):
     return HttpResponse(form_html)
 
 
-@csrf_exempt
 def delete_student(request, pk):
 
     student = get_object_or_404(Student, id=pk)
+    student.delete()
 
-
-    if request.method == 'POST':
-        form = StudentUpdateForm(request.POST, instance=student)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('students-list'))
-
-    elif request.method == 'GET':
-        form = StudentUpdateForm(instance=student)
-
-    form_html = f"""
-    <form method="POST">
-      {form.as_p()}
-      <input type="submit" value="Save">
-    </form>
-    """
-
-    return HttpResponse(form_html)
-
-
+    return HttpResponseRedirect(reverse('students:list'))

@@ -15,10 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
-from groups.views import create_group, get_groups
-from students.views import hello, generate_students, get_students, create_student
-from teachers.views import get_teachers, create_teacher
+from students.views import hello, generate_students
 
 urlpatterns = [
     path('admin/', admin.site.urls),

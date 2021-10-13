@@ -9,8 +9,12 @@ faker = "*"
 ipython = "*"
 django-extensions = "*"
 flake8 = "*"
+darker = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

@@ -43,7 +43,7 @@ class StudentBaseForm(ModelForm):
                        '@mail.ru', '@mail.ua', '@inbox.ru', '@list.ru', '@bk.ru', '@rambler.ru']
         email = self.cleaned_data['email']
         for domain in DOMAIN_LIST:
-            if domain in email:
+            if domain in email.lower():
                 raise ValidationError(f'ERROR: it is forbidden to use the domain {domain}')
 
         return email

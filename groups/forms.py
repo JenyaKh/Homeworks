@@ -15,4 +15,3 @@ class GroupCreateForm(GroupBaseForm):
 class GroupUpdateForm(GroupBaseForm):
     class Meta(GroupBaseForm.Meta):
         fields = ['name', 'faculty', 'handler', 'start_year']
-
