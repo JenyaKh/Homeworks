@@ -41,16 +41,16 @@ def create_group(request):
 @csrf_exempt
 def update_group(request, pk):
 
-    student = get_object_or_404(Group, id=pk)
+    group = get_object_or_404(Group, id=pk)
 
     if request.method == 'POST':
-        form = GroupCreateForm(request.POST, instance=student)
+        form = GroupCreateForm(request.POST, instance=group)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('groups:list'))
 
     elif request.method == 'GET':
-        form = GroupUpdateForm(instance=student)
+        form = GroupUpdateForm(instance=group)
 
     form_html = f"""
     <form method="POST">

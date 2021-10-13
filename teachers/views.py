@@ -63,16 +63,16 @@ def create_teacher(request):
 @csrf_exempt
 def update_teacher(request, pk):
 
-    student = get_object_or_404(Teacher, id=pk)
+    teacher = get_object_or_404(Teacher, id=pk)
 
     if request.method == 'POST':
-        form = TeacherUpdateForm(request.POST, instance=student)
+        form = TeacherUpdateForm(request.POST, instance=teacher)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('teachers:list'))
 
     elif request.method == 'GET':
-        form = TeacherUpdateForm(instance=student)
+        form = TeacherUpdateForm(instance=teacher)
 
     form_html = f"""
     <form method="POST">
