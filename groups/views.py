@@ -44,7 +44,7 @@ def update_group(request, pk):
     group = get_object_or_404(Group, id=pk)
 
     if request.method == 'POST':
-        form = GroupCreateForm(request.POST, instance=group)
+        form = GroupUpdateForm(request.POST, instance=group)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('groups:list'))
