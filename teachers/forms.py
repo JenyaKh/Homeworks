@@ -3,7 +3,7 @@ from django.core.validators import ValidationError
 from teachers.models import Teacher
 
 
-class TeacherCreateForm(ModelForm):
+class TeacherBaseForm(ModelForm):
     class Meta:
         model = Teacher
         fields = ['first_name', 'last_name', 'faculty', 'phone', 'birthdate']
@@ -30,3 +30,12 @@ class TeacherCreateForm(ModelForm):
             raise ValidationError('First and last names can\'t be equal')
 
         return cleaned_data
+
+
+class TeacherCreateForm(TeacherBaseForm):
+    pass
+
+
+class TeacherUpdateForm(TeacherBaseForm):
+    class Meta(TeacherBaseForm.Meta):
+        fields = ['first_name', 'last_name', 'faculty', 'phone']

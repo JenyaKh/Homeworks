@@ -1,12 +1,14 @@
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from webargs import fields
 from webargs.djangoparser import use_kwargs
 
-from students.forms import StudentCreateForm
+from students.forms import StudentCreateForm, StudentUpdateForm
 from students.models import Student
-from utils import format_records
+from students.utils import format_records
 
 
 def hello(request):
@@ -78,7 +80,7 @@ def create_student(request):
         form = StudentCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/students')
+            return HttpResponseRedirect(reverse('students:list'))
 
     elif request.method == 'GET':
         form = StudentCreateForm()
@@ -91,3 +93,35 @@ def create_student(request):
         """
 
     return HttpResponse(form_html)
+
+
+@csrf_exempt
+def update_student(request, pk):
+
+    student = get_object_or_404(Student, id=pk)
+
+    if request.method == 'POST':
+        form = StudentUpdateForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('students:list'))
+
+    elif request.method == 'GET':
+        form = StudentUpdateForm(instance=student)
+
+    form_html = f"""
+    <form method="POST">
+      {form.as_p()}
+      <input type="submit" value="Save">
+    </form>
+    """
+
+    return HttpResponse(form_html)
+
+
+def delete_student(request, pk):
+
+    student = get_object_or_404(Student, id=pk)
+    student.delete()
+
+    return HttpResponseRedirect(reverse('students:list'))
