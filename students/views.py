@@ -72,7 +72,7 @@ def get_students(request, **params):
 def search_student(request):
     query = request.GET.get('text')
     object_list = Student.objects.filter(
-        Q(first_name__startswith=query) | Q(last_name__startswith=query)
+        Q(first_name__icontains=query) | Q(last_name__icontains=query)
     )
     return render(
         request=request,

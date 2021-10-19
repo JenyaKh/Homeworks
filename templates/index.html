@@ -32,13 +32,14 @@
             }
         }
 
+
     </style>
 
 
 </head>
 <body>
 
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url "index" %}">LMS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -55,6 +56,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "students:create" %}">Create
                     student</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled">Disabled</a>
                 </li>
             </ul>
             <form class="d-flex" action="{% url 'students:search' %}" method="get">
