@@ -70,6 +70,7 @@ class StudentCreateForm(PersonBaseForm):
 
 class StudentUpdateForm(PersonBaseForm):
     class Meta(PersonBaseForm.Meta):
+        model = Student
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'budget', 'scholarship', 'course']
 
 
