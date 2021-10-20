@@ -72,6 +72,7 @@ def get_students(request, **params):
 
 
 def search_student(request):
+    courses = Course.objects.all()
     query = request.GET.get('text')
     object_list = Student.objects.filter(
         Q(first_name__icontains=query) | Q(last_name__icontains=query)
@@ -79,7 +80,8 @@ def search_student(request):
     return render(
         request=request,
         template_name="students/students_table.html",
-        context={"students_list": object_list}
+        context={"students_list": object_list,
+                 "courses": courses}
     )
 
 
