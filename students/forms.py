@@ -2,13 +2,13 @@ import datetime
 
 from django.forms import ModelForm
 from django.core.validators import ValidationError
-from students.models import Student
+from students.models import Student, Teacher
 
 
-class StudentBaseForm(ModelForm):
+class PersonBaseForm(ModelForm):
     class Meta:
-        model = Student
-        fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number', 'budget', 'scholarship']
+        abstract = True
+    fields = ['first_name', 'last_name', 'email', 'phone_number']
 
     @staticmethod
     def normalize_name(name):
@@ -31,11 +31,6 @@ class StudentBaseForm(ModelForm):
         if first_name == last_name:
             raise ValidationError('ERROR: First and last names can\'t be equal')
 
-        budget = self.cleaned_data['budget']
-        scholarship = self.cleaned_data['scholarship']
-        if not budget and scholarship:
-            raise ValidationError('ERROR: student can receive a scholarship only on a budget')
-
         return cleaned_data
 
     def clean_email(self):
@@ -48,8 +43,13 @@ class StudentBaseForm(ModelForm):
 
         return email
 
-    def clean_birthdate(self):
 
+class StudentCreateForm(PersonBaseForm):
+    class Meta:
+        model = Student
+        fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number', 'budget', 'scholarship', 'course']
+
+    def clean_birthdate(self):
         min_age = 18
         birthdate = self.cleaned_data['birthdate']
         if datetime.date.today().year - birthdate.year < min_age:
@@ -57,11 +57,23 @@ class StudentBaseForm(ModelForm):
 
         return birthdate
 
+    def clean(self):
+        cleaned_data = super().clean()
 
-class StudentCreateForm(StudentBaseForm):
-    pass
+        budget = self.cleaned_data['budget']
+        scholarship = self.cleaned_data['scholarship']
+        if not budget and scholarship:
+            raise ValidationError('ERROR: student can receive a scholarship only on a budget')
+
+        return cleaned_data
 
 
-class StudentUpdateForm(StudentBaseForm):
-    class Meta(StudentBaseForm.Meta):
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'budget', 'scholarship']
+class StudentUpdateForm(PersonBaseForm):
+    class Meta(PersonBaseForm.Meta):
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'budget', 'scholarship', 'course']
+
+
+class TeacherCreateForm(PersonBaseForm):
+    class Meta:
+        model = Teacher
+        fields = ["first_name", "last_name", "email", "phone_number", "course"]

@@ -11,6 +11,8 @@ django-extensions = "*"
 flake8 = "*"
 darker = "*"
 django-crispy-forms = "*"
+django-phonenumber-field = "*"
+phonenumbers = "*"
 
 [dev-packages]
 

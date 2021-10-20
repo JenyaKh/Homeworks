@@ -15,7 +15,9 @@ Including another URLconf
 """
 
 from django.urls import path
-from students.views import get_students, create_student, update_student, delete_student, search_student
+from students.views import (get_students, create_student, update_student, delete_student,
+                            search_student, create_teacher, get_teachers, search_student_course,
+                            search_teacher_course)
 
 app_name = 'students'
 
@@ -24,5 +26,9 @@ urlpatterns = [
     path('create/', create_student, name='create'),
     path('update/<int:pk>/', update_student, name='update'),
     path('delete/<int:pk>/', delete_student, name='delete'),
-    path('search/', search_student, name='search')
+    path("create-teacher/", create_teacher, name="create-teacher"),
+    path("list-teachers/", get_teachers, name='list-teachers'),
+    path('search/', search_student, name='search'),
+    path('search-students/', search_student_course, name='search-student'),
+    path('search-teachers/', search_teacher_course, name='search-teacher'),
 ]

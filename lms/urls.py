@@ -26,8 +26,7 @@ urlpatterns = [
     path('generate_students/', generate_students),
     path('generate_students/count=<int:count>/', generate_students),
     path('students/', include('students.urls')),
-    path('teachers/', include('teachers.urls')),
-    path('groups/', include('groups.urls')),
+
 
 ]
 

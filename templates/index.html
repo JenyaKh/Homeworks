@@ -33,41 +33,63 @@
         }
 
 
+
+
     </style>
 
 
 </head>
 <body>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url "index" %}">LMS</a>
+        <a class="navbar-brand" href="{% url 'index' %}">LMS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarCollapse" aria-controls="navbarCollapse"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page"
-                       href="{% url "students:list" %}">All students table</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url "students:create" %}">Create
-                    student</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled">Disabled</a>
+        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        STUDENTS
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' %}">All
+                            students table</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'students:create' %}">Create
+                                student</a>
+                    </ul>
                 </li>
             </ul>
-            <form class="d-flex" action="{% url 'students:search' %}" method="get">
-                <input class="form-control me-2" type="search"
-                       placeholder="Search" aria-label="Search" name="text">
-                <button class="btn btn-outline-success" type="submit">Search
-                </button>
-            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        TEACHERS
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list-teachers' %}">All teachers table</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="{% url 'students:create-teacher' %}">Create
+                                teacher</a>
+                    </ul>
+                </li>
+            </ul>
         </div>
+        <form class="d-flex" action="{% url 'students:search' %}" method="get">
+            <input class="form-control me-2" type="search"
+                   placeholder="Search" aria-label="Search" name="text">
+            <button class="btn btn-outline-success" type="submit">Search
+            </button>
+        </form>
+
     </div>
 </nav>
 

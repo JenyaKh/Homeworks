@@ -6,8 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from webargs import fields
 from webargs.djangoparser import use_kwargs
 
-from students.forms import StudentCreateForm, StudentUpdateForm
-from students.models import Student
+from students.forms import StudentCreateForm, StudentUpdateForm, TeacherCreateForm
+from students.models import Student, Teacher, Course
 
 
 def hello(request):
@@ -49,6 +49,7 @@ def generate_students(request, count=10):
 def get_students(request, **params):
 
     students = Student.objects.all().order_by('-id')
+    courses = Course.objects.all()
 
     for param_name, param_value in params.items():
         if param_name == 'text':
@@ -65,7 +66,8 @@ def get_students(request, **params):
     return render(
         request=request,
         template_name="students/students_table.html",
-        context={"students_list": students}
+        context={"students_list": students,
+                 "courses": courses}
     )
 
 
@@ -130,3 +132,66 @@ def delete_student(request, pk):
 
 def page_not_found_view(request, exception):
     return render(request, 'errors/404.html', status=404)
+
+
+@csrf_exempt
+def create_teacher(request):
+    if request.method == "POST":
+        form = TeacherCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("students:list-teachers"))
+
+    elif request.method == "GET":
+        form = TeacherCreateForm()
+
+    return render(
+        request=request,
+        template_name="students/teacher_create.html",
+        context={"form": form}
+    )
+
+
+def get_teachers(request):
+
+    courses = Course.objects.all()
+    teachers = Teacher.objects.all().order_by('-id')
+
+    return render(
+        request=request,
+        template_name="students/teachers_table.html",
+        context={"teachers_list": teachers,
+                 "courses": courses}
+    )
+
+
+def search_student_course(request):
+    query = request.GET.get('course_student')
+    courses = Course.objects.all()
+    if query == "all":
+        object_list = Student.objects.all()
+    else:
+        object_list = Student.objects.filter(course=query)
+
+    return render(
+        request=request,
+        template_name="students/students_table.html",
+        context={"students_list": object_list,
+                 "courses": courses}
+    )
+
+
+def search_teacher_course(request):
+    courses = Course.objects.all()
+    query = request.GET.get('course_teacher')
+    if query == "all":
+        object_list = Teacher.objects.all()
+    else:
+        object_list = Teacher.objects.filter(course=query)
+
+    return render(
+        request=request,
+        template_name="students/teachers_table.html",
+        context={"teachers_list": object_list,
+                 "courses": courses}
+    )
