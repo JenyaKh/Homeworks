@@ -47,6 +47,8 @@ def generate_students(request, count=10):
     location="query",
 )
 def get_students(request, **params):
+    request.session['students_course'] = []
+    request.session['students_search'] = []
     students = Student.objects.all().order_by('-id')
     courses = Course.objects.all()
 
@@ -78,9 +80,15 @@ def search_student(request):
     query = request.GET.get('text')
 
     objects_list = Student.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
-    request.session['students'] = []
+    request.session['students_search'] = []
+    list_students = request.session['students_course']
+    if list_students:
+        or_filter = Q()
+        for student_id in list_students:
+            or_filter |= Q(id=student_id)
+        objects_list = objects_list.filter(or_filter)
     for obj in objects_list:
-        request.session['students'].append(obj.id)
+        request.session['students_search'].append(obj.id)
     request.session.modified = True
     return render(
         request=request,
@@ -176,24 +184,28 @@ def get_teachers(request):
 
 
 def search_by_course(request, model, template_name):
-    list_students = request.session['students']
     selected_id = request.GET.get('course_id')
     courses = Course.objects.all()
     if selected_id == "all":
-        object_list = model.objects.all()
+        objects_list = model.objects.all()
         selected_name = "All courses"
     else:
-        object_list = model.objects.filter(course=selected_id)
+        objects_list = model.objects.filter(course=selected_id)
         selected_name = Course.objects.get(id=selected_id).name
+    request.session['students_course'] = []
+    list_students = request.session['students_search']
     if list_students:
         or_filter = Q()
         for student_id in list_students:
             or_filter |= Q(id=student_id)
-        object_list = object_list.filter(or_filter)
+        objects_list = objects_list.filter(or_filter)
+    for obj in objects_list:
+        request.session['students_course'].append(obj.id)
+    request.session.modified = True
     return render(
         request=request,
         template_name=template_name,
-        context={"objects_list": object_list,
+        context={"objects_list": objects_list,
                  "courses": courses,
                  "selected_id": selected_id,
                  "selected_name": selected_name, }
