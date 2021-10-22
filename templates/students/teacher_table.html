@@ -1,11 +1,14 @@
 {% extends "index.html" %}
 
 {% block content %}
-<form class="d-flex" action="{% url 'students:search-teacher' %}" method="get">
-    <select class="form-select" name="course_teacher">
+<form class="d-flex" action="{% url 'students:search-by-course-teacher' %}" method="get">
+    <select class="form-select" name="course_id">
+        <option value={{selected_id}} selected>{{selected_name}}</option>
+        {% ifnotequal selected_id "all" %}
         <option value="all">All courses</option>
+        {% endifnotequal %}
         {% for course in courses %}
-        <option value={{course.id}}>{{ course }}</option>
+        <option value={{course.id}}>{{ course.name }}</option>
         {% endfor %}
     </select>
     <button class="btn btn-outline-success" type="submit">Search
@@ -22,7 +25,7 @@
         <th scope="col">Course</th>
     </thead>
     <tbody>
-    {% for teacher in teachers_list %}
+    {% for teacher in objects_list %}
     <tr>
         <th scope="row">{{ teacher.id }}</th>
         <td>{{ teacher.first_name }}</td>

@@ -1,11 +1,14 @@
 {% extends "index.html" %}
 
 {% block content %}
-<form class="d-flex" action="{% url 'students:search-student' %}" method="get">
-    <select class="form-select" name="course_student">
-        <option value="all">All courses</option>
+<form class="d-flex" action="{% url 'students:search-by-course-student' %}" method="get">
+    <select class="form-select" name="course_id">
+        <option value={{selected_id}} selected>{{selected_name}}</option>
+        {% ifnotequal selected_id "all" %}
+            <option value="all">All courses</option>
+        {% endifnotequal %}
         {% for course in courses %}
-        <option value={{course.id}}>{{ course }}</option>
+                <option value={{course.id}}>{{ course }}</option>
         {% endfor %}
 
     </select>
@@ -28,7 +31,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for student in students_list %}
+    {% for student in objects_list %}
     <tr>
         <th scope="row">{{ student.id }}</th>
         <td>{{ student.first_name }}</td>

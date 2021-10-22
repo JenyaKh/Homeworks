@@ -47,7 +47,6 @@ def generate_students(request, count=10):
     location="query",
 )
 def get_students(request, **params):
-
     students = Student.objects.all().order_by('-id')
     courses = Course.objects.all()
 
@@ -65,22 +64,28 @@ def get_students(request, **params):
 
     return render(
         request=request,
-        template_name="students/students_table.html",
-        context={"students_list": students,
-                 "courses": courses}
+        template_name="students/student_table.html",
+        context={"objects_list": students,
+                 "courses": courses,
+                 "selected_id": "all",
+                 "selected_name": "All courses"
+                 }
     )
 
 
 def search_student(request):
     courses = Course.objects.all()
     query = request.GET.get('text')
-    object_list = Student.objects.filter(
-        Q(first_name__icontains=query) | Q(last_name__icontains=query)
-    )
+
+    objects_list = Student.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
+    request.session['students'] = []
+    for obj in objects_list:
+        request.session['students'].append(obj.id)
+    request.session.modified = True
     return render(
         request=request,
-        template_name="students/students_table.html",
-        context={"students_list": object_list,
+        template_name="students/student_table.html",
+        context={"objects_list": objects_list,
                  "courses": courses}
     )
 
@@ -98,7 +103,7 @@ def create_student(request):
 
     return render(
         request=request,
-        template_name="students/students_create.html",
+        template_name="students/student_create.html",
         context={"form": form}
     )
 
@@ -119,7 +124,7 @@ def update_student(request, pk):
 
     return render(
         request=request,
-        template_name="students/students_update.html",
+        template_name="students/student_update.html",
         context={"form": form}
     )
 
@@ -161,39 +166,35 @@ def get_teachers(request):
 
     return render(
         request=request,
-        template_name="students/teachers_table.html",
-        context={"teachers_list": teachers,
-                 "courses": courses}
+        template_name="students/teacher_table.html",
+        context={"objects_list": teachers,
+                 "courses": courses,
+                 "selected_id": "all",
+                 "selected_name": "All courses"
+                 }
     )
 
 
-def search_student_course(request):
-    query = request.GET.get('course_student')
+def search_by_course(request, model, template_name):
+    list_students = request.session['students']
+    selected_id = request.GET.get('course_id')
     courses = Course.objects.all()
-    if query == "all":
-        object_list = Student.objects.all()
+    if selected_id == "all":
+        object_list = model.objects.all()
+        selected_name = "All courses"
     else:
-        object_list = Student.objects.filter(course=query)
-
+        object_list = model.objects.filter(course=selected_id)
+        selected_name = Course.objects.get(id=selected_id).name
+    if list_students:
+        or_filter = Q()
+        for student_id in list_students:
+            or_filter |= Q(id=student_id)
+        object_list = object_list.filter(or_filter)
     return render(
         request=request,
-        template_name="students/students_table.html",
-        context={"students_list": object_list,
-                 "courses": courses}
-    )
-
-
-def search_teacher_course(request):
-    courses = Course.objects.all()
-    query = request.GET.get('course_teacher')
-    if query == "all":
-        object_list = Teacher.objects.all()
-    else:
-        object_list = Teacher.objects.filter(course=query)
-
-    return render(
-        request=request,
-        template_name="students/teachers_table.html",
-        context={"teachers_list": object_list,
-                 "courses": courses}
+        template_name=template_name,
+        context={"objects_list": object_list,
+                 "courses": courses,
+                 "selected_id": selected_id,
+                 "selected_name": selected_name, }
     )
