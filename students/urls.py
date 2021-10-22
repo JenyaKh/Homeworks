@@ -30,8 +30,8 @@ urlpatterns = [
     path("create-teacher/", create_teacher, name="create-teacher"),
     path("list-teachers/", get_teachers, name='list-teachers'),
     path('search/', search_student, name='search'),
-    path('search-by-course/', search_by_course,
+    path('search-by-course/student', search_by_course,
          {'model': Student, 'template_name': "students/student_table.html"}, name='search-by-course-student'),
-    path('search-by-course/', search_by_course,
+    path('search-by-course/teacher', search_by_course,
          {'model': Teacher, 'template_name': "students/teacher_table.html"}, name='search-by-course-teacher'),
 ]

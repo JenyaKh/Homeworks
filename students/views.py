@@ -14,6 +14,25 @@ def hello(request):
     return HttpResponse('SUCCESS')
 
 
+def clean_session(request):
+    request.session['students_course'] = []
+    request.session['students_search'] = []
+
+
+def students_session(request, first_filter, second_filter, objects_list):
+    request.session[first_filter] = []
+    list_students = request.session[second_filter]
+    if list_students:
+        or_filter = Q()
+        for student_id in list_students:
+            or_filter |= Q(id=student_id)
+        objects_list = objects_list.filter(or_filter)
+    for obj in objects_list:
+        request.session[first_filter].append(obj.id)
+    request.session.modified = True
+    return objects_list
+
+
 def index(request):
     return render(
         request=request,
@@ -47,8 +66,7 @@ def generate_students(request, count=10):
     location="query",
 )
 def get_students(request, **params):
-    request.session['students_course'] = []
-    request.session['students_search'] = []
+    clean_session(request)
     students = Student.objects.all().order_by('-id')
     courses = Course.objects.all()
 
@@ -78,23 +96,18 @@ def get_students(request, **params):
 def search_student(request):
     courses = Course.objects.all()
     query = request.GET.get('text')
-
-    objects_list = Student.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
-    request.session['students_search'] = []
-    list_students = request.session['students_course']
-    if list_students:
-        or_filter = Q()
-        for student_id in list_students:
-            or_filter |= Q(id=student_id)
-        objects_list = objects_list.filter(or_filter)
-    for obj in objects_list:
-        request.session['students_search'].append(obj.id)
-    request.session.modified = True
+    if not query:
+        return HttpResponseRedirect(reverse('students:list'))
+    else:
+        objects_list = Student.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
+    objects_list = students_session(request, 'students_search', 'students_course', objects_list)
     return render(
         request=request,
         template_name="students/student_table.html",
         context={"objects_list": objects_list,
-                 "courses": courses}
+                 "courses": courses,
+                 "selected_id": request.session['selected_id'],
+                 "selected_name": request.session['selected_name'], }
     )
 
 
@@ -168,7 +181,7 @@ def create_teacher(request):
 
 
 def get_teachers(request):
-
+    clean_session(request)
     courses = Course.objects.all()
     teachers = Teacher.objects.all().order_by('-id')
 
@@ -192,16 +205,10 @@ def search_by_course(request, model, template_name):
     else:
         objects_list = model.objects.filter(course=selected_id)
         selected_name = Course.objects.get(id=selected_id).name
-    request.session['students_course'] = []
-    list_students = request.session['students_search']
-    if list_students:
-        or_filter = Q()
-        for student_id in list_students:
-            or_filter |= Q(id=student_id)
-        objects_list = objects_list.filter(or_filter)
-    for obj in objects_list:
-        request.session['students_course'].append(obj.id)
-    request.session.modified = True
+    if model == Student:
+        request.session['selected_id'] = selected_id
+        request.session['selected_name'] = selected_name
+        objects_list = students_session(request, 'students_course', 'students_search', objects_list)
     return render(
         request=request,
         template_name=template_name,
