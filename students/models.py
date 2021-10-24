@@ -77,7 +77,7 @@ class Teacher(Person):
 
 
 class Invitations(models.Model):
-    student = models.ForeignKey("students.Student", null=True, on_delete=models.SET_NULL)
+    student = models.ForeignKey("students.Student", null=True, on_delete=models.CASCADE)
     email = models.EmailField(max_length=120, null=False)
     invite_code = models.CharField(max_length=120, null=False)
     accept = models.BooleanField(null=True)

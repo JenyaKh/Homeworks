@@ -3,7 +3,7 @@
 {% block content %}
 <form class="d-flex" action="{% url 'students:search-by-course-teacher' %}" method="get">
     <select class="form-select" name="course_id">
-        <option value={{selected_id}} selected>{{selected_name}}</option>
+        <option value={{selected_id}} selected>Current value: {{selected_name}}</option>
         {% ifnotequal selected_id "all" %}
         <option value="all">All courses</option>
         {% endifnotequal %}
