@@ -13,8 +13,6 @@ def hello(request):
 
 
 def index(request):
-    request.session['selected_id'] = 'all'
-    request.session['selected_name'] = 'All courses'
     return render(
         request=request,
         template_name="index.html",
@@ -87,7 +85,8 @@ def update_student(request, pk):
 
     elif request.method == 'GET':
         form = StudentUpdateForm(instance=student)
-        img_path = Student.objects.get(id=pk).avatar
+
+    img_path = Student.objects.get(id=pk).avatar
 
     return render(
         request=request,
