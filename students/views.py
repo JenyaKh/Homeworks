@@ -41,7 +41,7 @@ def get_students(request, selected_id=None):
         request.session.modified = True
     if request.GET.get('text'):
         query = request.GET.get('text')
-        objects_list = Student.objects.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
+        objects_list = objects_list.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
 
     return render(
         request=request,
