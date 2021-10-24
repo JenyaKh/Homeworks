@@ -36,9 +36,9 @@ def get_students(request, selected_id=None):
     else:
         objects_list = Student.objects.filter(course=selected_id)
         selected_name = Course.objects.get(id=selected_id).name
-        request.session['selected_id'] = selected_id
-        request.session['selected_name'] = selected_name
-        request.session.modified = True
+    request.session['selected_id'] = selected_id
+    request.session['selected_name'] = selected_name
+    request.session.modified = True
     if request.GET.get('text'):
         query = request.GET.get('text')
         objects_list = objects_list.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
