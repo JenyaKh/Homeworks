@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+
+{% block content %}
+<form class="d-flex" action="{% url 'students:search-by-course-student' %}" method="get">
+    <select class="form-select" name="course_id">
+        <option value={{selected_id}} selected>{{selected_name}}</option>
+        {% ifnotequal selected_id "all" %}
+            <option value="all">All courses</option>
+        {% endifnotequal %}
+        {% for course in courses %}
+                <option value={{course.id}}>{{ course }}</option>
+        {% endfor %}
+
+    </select>
+    <button class="btn btn-outline-success" type="submit">Search
+    </button>
+</form>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">First name</th>
+        <th scope="col">Last name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone number</th>
+        <th scope="col">Birthdate</th>
+        <th scope="col">Age</th>
+        <th scope="col">Course</th>
+        <th scope="col">Update</th>
+        <th scope="col">Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for student in objects_list %}
+    <tr>
+        <th scope="row">{{ student.id }}</th>
+        <td>{{ student.first_name }}</td>
+        <td>{{ student.last_name }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.phone_number }}</td>
+        <td>{{ student.birthdate }}</td>
+        <td>{{ student.age }}</td>
+        <td>{{ student.course }}</td>
+        <td>
+            <a type="button" class="btn btn-success" href="{% url 'students:update' pk=student.id %}">Update
+            </a>
+        </td>
+        <td>
+            <a type="button" class="btn btn-danger" href="{% url 'students:delete' pk=student.id %}">Delete
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}

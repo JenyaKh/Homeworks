@@ -38,8 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'students',
-    'groups',
-    'teachers',
     'django_extensions',
     'crispy_forms',
 
