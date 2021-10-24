@@ -1,0 +1,77 @@
+import faker
+from flask import Flask
+import csv
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello_world():
+    return '<font color=red size=14>'\
+           '<p align=center>Introducing Flask</p>' \
+           '<p align=center><a href=/pipfile>pipfile</a></p>'\
+           '<p align=center><a href=/random_students>random_students</a></p>' \
+           '<p align=center><a href=/avr_data>avr_data</a></p></font>'
+
+
+@app.route("/pipfile")
+def get_pipfile():
+    data_string = ''
+    # trying to open the file and read the data line by line
+    try:
+        with open("pipfile.lock", "r", encoding="utf-8") as pip_file:
+            for line in pip_file:
+                data_string += '<p>' + line + '</p>'
+
+    # error message if the required file is missing
+    except FileNotFoundError:
+        return "<font size=12><p> file pipfile.lock is missing in this directory</p></font>"
+
+    return data_string
+
+
+@app.route("/random_students")
+def get_random_students():
+    students = ''
+    num = 1  # student's serial number
+    fake = faker.Faker('ru_RU')
+    while num <= 10:
+        students += '<p><font size=12>' + str(num) + '\n' + fake.name() + '</p>'
+        num += 1
+    return students
+
+
+@app.route("/avr_data")
+def get_avr_data():
+    rows = []
+    sum_height = 0
+    sum_weight = 0
+    num_st = 1
+
+    # trying to open a csv file with student data
+    try:
+        with open("hw.csv", 'r') as file_data:
+            csv_reader = csv.reader(file_data)
+            for row in csv_reader:
+                if row:
+                    rows.append(row)
+
+    # error message if the required file is missing
+    except FileNotFoundError:
+        return "<font size=12><p>csv file is missing in this directory</p></font>"
+
+    total_st = len(rows) - 1  # total number of students
+
+    while num_st <= total_st:
+        sum_height += float(rows[num_st][1])  # add the student's height to the total
+        sum_weight += float(rows[num_st][2])  # add the student's weight to the total
+        num_st += 1  # increase the student's serial number
+
+    avr_height = round(sum_height/total_st, 4)  # calculate the average height
+    avr_weight = round(sum_weight/total_st, 4)  # calculate the average weight
+
+    return '<font size=8><p>Average student height: ' + str(avr_height) + '</p>'\
+           '<p>Average student weight: ' + str(avr_weight) + '</p></font>'
+
+
+app.run(port=5001)

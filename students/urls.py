@@ -16,22 +16,19 @@ Including another URLconf
 
 from django.urls import path
 
-from students.models import Student, Teacher
-from students.views import (get_students, create_student, update_student, delete_student,
-                            search_student, create_teacher, get_teachers, search_by_course)
+from students.views import (get_students, create_student, update_student,
+                            delete_student, create_teacher, get_teachers)
 
 app_name = 'students'
 
 urlpatterns = [
-    path('', get_students, name='list'),
+    path('', get_students, {'selected_id': "all"}, name='list'),
     path('create/', create_student, name='create'),
     path('update/<int:pk>/', update_student, name='update'),
     path('delete/<int:pk>/', delete_student, name='delete'),
     path("create-teacher/", create_teacher, name="create-teacher"),
-    path("list-teachers/", get_teachers, name='list-teachers'),
-    path('search/', search_student, name='search'),
-    path('search-by-course/student', search_by_course,
-         {'model': Student, 'template_name': "students/student_table.html"}, name='search-by-course-student'),
-    path('search-by-course/teacher', search_by_course,
-         {'model': Teacher, 'template_name': "students/teacher_table.html"}, name='search-by-course-teacher'),
+    path("list-teachers/", get_teachers, {'selected_id': "all"}, name='list-teachers'),
+    path('search/', get_students, name='search'),
+    path('search-by-course/student', get_students,  name='search-by-course-student'),
+    path('search-by-course/teacher', get_teachers,  name='search-by-course-teacher'),
 ]

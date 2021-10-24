@@ -16,7 +16,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+
+from lms import settings
 from students.views import hello, generate_students, index
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", index, name="index"),
@@ -27,7 +30,9 @@ urlpatterns = [
     path('generate_students/count=<int:count>/', generate_students),
     path('students/', include('students.urls')),
 
-
 ]
 
 handler404 = 'students.views.page_not_found_view'
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
