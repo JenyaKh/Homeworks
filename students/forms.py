@@ -47,7 +47,8 @@ class PersonBaseForm(ModelForm):
 class StudentCreateForm(PersonBaseForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'email', 'birthdate', 'phone_number', 'budget', 'scholarship', 'course']
+        fields = ['avatar', 'first_name', 'last_name', 'email', 'birthdate',
+                  'phone_number', 'resume', 'budget', 'scholarship', 'course']
 
     def clean_birthdate(self):
         min_age = 18
@@ -71,7 +72,8 @@ class StudentCreateForm(PersonBaseForm):
 class StudentUpdateForm(PersonBaseForm):
     class Meta(PersonBaseForm.Meta):
         model = Student
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'budget', 'scholarship', 'course']
+        fields = ['avatar', 'first_name', 'last_name', 'email', 'phone_number',
+                  'resume', 'budget', 'scholarship', 'course']
 
 
 class TeacherCreateForm(PersonBaseForm):

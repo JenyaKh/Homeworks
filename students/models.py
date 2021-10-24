@@ -2,17 +2,13 @@ import datetime
 import uuid
 
 from django.core.validators import MinLengthValidator
+from django.core import validators
 from django.db import models
 from faker import Faker
 from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Person(models.Model):
-
-    # id = models.UUIDField(primary_key=True, unique=True,
-    #                       default=uuid.uuid4,
-    #                       editable=False)
-
     first_name = models.CharField(
         max_length=60, null=False, validators=[MinLengthValidator(2)]
     )
@@ -33,13 +29,17 @@ class Person(models.Model):
 
 
 class Student(Person):
-
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     birthdate = models.DateField(null=True, default=datetime.date.today)
     budget = models.BooleanField(null=True)
     scholarship = models.BooleanField(null=True)
+    resume = models.FileField(upload_to='documents/', null=True, blank=True,
+                              validators=[validators.FileExtensionValidator(['txt', 'pdf', 'docx'],
+                                                                            message='file must be txt, docx, pdf')])
     course = models.ForeignKey("students.Course",
                                null=True,
                                on_delete=models.SET_NULL)
+    invited = models.IntegerField(default=0, null=True)
 
     @classmethod
     def generate_instances(cls, count):
@@ -74,3 +74,10 @@ class Teacher(Person):
 
     def __str__(self):
         return f"{self.email} ({self.id})"
+
+
+class Invitations(models.Model):
+    student = models.ForeignKey("students.Student", null=True, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=120, null=False)
+    invite_code = models.CharField(max_length=120, null=False)
+    accept = models.BooleanField(null=True)

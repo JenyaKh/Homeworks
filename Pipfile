@@ -13,6 +13,7 @@ darker = "*"
 django-crispy-forms = "*"
 django-phonenumber-field = "*"
 phonenumbers = "*"
+pillow = "*"
 
 [dev-packages]
 
