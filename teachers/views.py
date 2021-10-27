@@ -17,7 +17,7 @@ class TeacherList(ListView):
     model = Teacher
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(TeacherList, self).get_context_data(**kwargs)
         context['courses'] = Course.objects.all()
         context['selected_id'] = "all"
         context['selected_name'] = "All courses"
@@ -32,7 +32,7 @@ class TeacherSearchList(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
-        context = super().get_context_data(**kwargs)
+        context = super(TeacherSearchList, self).get_context_data(**kwargs)
         context['courses'] = Course.objects.all()
 
         return context

@@ -28,7 +28,7 @@ class StudentList(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
-        context = super().get_context_data(**kwargs)
+        context = super(StudentList, self).get_context_data(**kwargs)
         context['courses'] = Course.objects.all()
         context['selected_id'] = "all"
         context['selected_name'] = "All courses"
@@ -44,10 +44,11 @@ class StudentSearchList(ListView):
     model = Student
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(StudentSearchList, self).get_context_data(**kwargs)
         context['courses'] = Course.objects.all()
         context['selected_id'] = self.request.session['selected_id']
         context['selected_name'] = self.request.session['selected_name']
+
         return context
 
     def get_queryset(self):
@@ -85,9 +86,9 @@ class StudentUpdate(UpdateView):
     template_name = 'students/student_update.html'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super(StudentUpdate, self).get_context_data()
         context['avatar'] = self.object.avatar
-        return super().get_context_data(**context)
+        return context
 
 
 class StudentDelete(DeleteView):
@@ -96,9 +97,9 @@ class StudentDelete(DeleteView):
     template_name = 'students/student_delete.html'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super(StudentDelete, self).get_context_data()
         context['name'] = self.object.full_name()
-        return super().get_context_data(**context)
+        return context
 
 
 def page_not_found_view(request, exception):
