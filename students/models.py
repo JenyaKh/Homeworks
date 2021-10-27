@@ -1,10 +1,8 @@
 import datetime
-import uuid
-
-from django.core.validators import MinLengthValidator
 from django.core import validators
-from django.db import models
 from faker import Faker
+from django.core.validators import MinLengthValidator
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -36,7 +34,7 @@ class Student(Person):
     resume = models.FileField(upload_to='documents/', null=True, blank=True,
                               validators=[validators.FileExtensionValidator(['txt', 'pdf', 'docx'],
                                                                             message='file must be txt, docx, pdf')])
-    course = models.ForeignKey("students.Course",
+    course = models.ForeignKey("courses.Course",
                                null=True,
                                on_delete=models.SET_NULL)
     invited = models.IntegerField(default=0, null=True)
@@ -55,25 +53,6 @@ class Student(Person):
 
     def age(self):
         return datetime.datetime.now().year - self.birthdate.year
-
-
-class Course(models.Model):
-    id = models.UUIDField(primary_key=True, unique=True,
-                          default=uuid.uuid4,
-                          editable=False)
-    name = models.CharField(null=False, max_length=100)
-    start_date = models.DateField(null=True, default=datetime.date.today())
-    count_of_students = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class Teacher(Person):
-    course = models.ManyToManyField(to="students.Course")
-
-    def __str__(self):
-        return f"{self.email} ({self.id})"
 
 
 class Invitations(models.Model):

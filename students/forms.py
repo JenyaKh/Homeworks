@@ -2,7 +2,7 @@ import datetime
 
 from django.forms import ModelForm
 from django.core.validators import ValidationError
-from students.models import Student, Teacher
+from students.models import Student
 
 
 class PersonBaseForm(ModelForm):
@@ -74,9 +74,3 @@ class StudentUpdateForm(PersonBaseForm):
         model = Student
         fields = ['avatar', 'first_name', 'last_name', 'email', 'phone_number',
                   'resume', 'budget', 'scholarship', 'course']
-
-
-class TeacherCreateForm(PersonBaseForm):
-    class Meta:
-        model = Teacher
-        fields = ["first_name", "last_name", "email", "phone_number", "course"]

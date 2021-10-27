@@ -18,17 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 
 from lms import settings
-from students.views import hello, generate_students, index
+from students.views import hello, generate_students, IndexView
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path("", index, name="index"),
-    path("index/", index),
+    path("", IndexView.as_view(), name="index"),
     path('admin/', admin.site.urls),
     path('hello/', hello),
     path('generate_students/', generate_students),
     path('generate_students/count=<int:count>/', generate_students),
     path('students/', include('students.urls')),
+    path('teachers/', include('teachers.urls')),
 
 ]
 

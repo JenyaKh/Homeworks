@@ -57,7 +57,7 @@
                         STUDENTS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' %}">All
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list'  %}">All
                             students table</a>
                         </li>
                         <li>
@@ -73,11 +73,11 @@
                         TEACHERS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list-teachers' %}">All teachers table</a>
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'teachers:list' %}">All teachers table</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="{% url 'students:create-teacher' %}">Create
+                               href="{% url 'teachers:create' %}">Create
                                 teacher</a>
                     </ul>
                 </li>

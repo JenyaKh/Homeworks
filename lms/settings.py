@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'students',
     'django_extensions',
     'crispy_forms',
+    'teachers',
+    'courses',
 
 ]
 

@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block content %}
-<form class="d-flex" action="{% url 'students:list' %}" method="get">
+<form class="d-flex" action="{% url 'students:search' %}" method="get">
     <select class="form-select" name="course_id">
         <option value={{selected_id}} selected>Current value: {{selected_name}}</option>
         {% ifnotequal selected_id "all" %}
@@ -33,12 +33,12 @@
     </tr>
     </thead>
     <tbody>
-    {% for student in objects_list %}
+    {% for student in object_list %}
     <tr>
         <th scope="row">{{ student.id }}</th>
         <td>
             {% if student.avatar %}
-            <img src="/media/{{ student.avatar }}" width='60' height='60' alt='avatar'>
+            <img src="{{ student.avatar.url }}" width='60' height='60' alt='avatar'>
             {% else %}
             <p>No image</p>
             {% endif %}

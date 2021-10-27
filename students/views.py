@@ -1,22 +1,20 @@
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse_lazy
 
-from students.forms import StudentCreateForm, StudentUpdateForm, TeacherCreateForm
-from students.models import Student, Teacher, Course
+from courses.models import Course
+from students.forms import StudentCreateForm, StudentUpdateForm
+from students.models import Student
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 
 def hello(request):
     return HttpResponse('SUCCESS')
 
 
-def index(request):
-    return render(
-        request=request,
-        template_name="index.html",
-    )
+class IndexView(TemplateView):
+    template_name = 'index.html'
 
 
 def generate_students(request, count=10):
@@ -24,134 +22,84 @@ def generate_students(request, count=10):
     return HttpResponse('SUCCESS')
 
 
-def get_students(request, selected_id=None):
+class StudentList(ListView):
+    template_name = 'students/student_table.html'
+    model = Student
 
-    courses = Course.objects.all()
+    def get_context_data(self, *, object_list=None, **kwargs):
 
-    if request.GET.get('course_id'):
-        selected_id = request.GET.get('course_id')
+        context = super().get_context_data(**kwargs)
+        context['courses'] = Course.objects.all()
+        context['selected_id'] = "all"
+        context['selected_name'] = "All courses"
+        self.request.session['selected_id'] = "all"
+        self.request.session['selected_name'] = 'All courses'
 
-    if not selected_id:
-        selected_id = request.session['selected_id']
-
-    if selected_id == "all":
-        objects_list = Student.objects.all().order_by('-id')
-        selected_name = "All courses"
-    else:
-        objects_list = Student.objects.filter(course=selected_id)
-        selected_name = Course.objects.get(id=selected_id).name
-
-    request.session['selected_id'] = selected_id
-    request.session['selected_name'] = selected_name
-    request.session.modified = True
-
-    if request.GET.get('text'):
-        query = request.GET.get('text')
-        objects_list = objects_list.filter(Q(first_name__contains=query) | Q(last_name__contains=query))
-
-    return render(
-        request=request,
-        template_name="students/student_table.html",
-        context={"objects_list": objects_list,
-                 "courses": courses,
-                 "selected_id": selected_id,
-                 "selected_name": selected_name
-                 }
-    )
+        return context
 
 
-@csrf_exempt
-def create_student(request):
-    if request.method == 'POST':
-        form = StudentCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('students:list'))
+class StudentSearchList(ListView):
 
-    elif request.method == 'GET':
-        form = StudentCreateForm()
+    template_name = 'students/student_table.html'
+    model = Student
 
-    return render(
-        request=request,
-        template_name="students/student_create.html",
-        context={"form": form}
-    )
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['courses'] = Course.objects.all()
+        context['selected_id'] = self.request.session['selected_id']
+        context['selected_name'] = self.request.session['selected_name']
+        return context
 
+    def get_queryset(self):
 
-@csrf_exempt
-def update_student(request, pk):
+        selected_id = self.request.GET.get('course_id', None)
 
-    student = get_object_or_404(Student, id=pk)
+        if not selected_id:
+            selected_id = self.request.session['selected_id']
+        if selected_id == "all":
+            self.request.session['selected_name'] = "All courses"
+            self.request.session['selected_id'] = "all"
+            object_list = Student.objects.all().order_by('-id')
+        else:
+            self.request.session['selected_name'] = Course.objects.get(id=selected_id).name
+            self.request.session['selected_id'] = selected_id
+            object_list = Student.objects.filter(course=selected_id)
 
-    if request.method == 'POST':
-        form = StudentUpdateForm(request.POST, request.FILES, instance=student)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('students:list'))
+        search_text = self.request.GET.get('text', None)
+        if search_text:
+            object_list = object_list.filter(Q(first_name__contains=search_text) | Q(last_name__contains=search_text))
 
-    elif request.method == 'GET':
-        form = StudentUpdateForm(instance=student)
-
-    img_path = Student.objects.get(id=pk).avatar
-
-    return render(
-        request=request,
-        template_name="students/student_update.html",
-        context={"form": form,
-                 "img_path": img_path}
-
-    )
+        return object_list
 
 
-def delete_student(request, pk):
+class StudentCreate(CreateView):
+    form_class = StudentCreateForm
+    template_name = 'students/student_create.html'
+    success_url = reverse_lazy('students:list')
 
-    student = get_object_or_404(Student, id=pk)
-    student.delete()
 
-    return HttpResponseRedirect(reverse('students:list'))
+class StudentUpdate(UpdateView):
+    form_class = StudentUpdateForm
+    model = Student
+    success_url = reverse_lazy('students:list')
+    template_name = 'students/student_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['avatar'] = self.object.avatar
+        return super().get_context_data(**context)
+
+
+class StudentDelete(DeleteView):
+    model = Student
+    success_url = reverse_lazy('students:list')
+    template_name = 'students/student_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['name'] = self.object.full_name()
+        return super().get_context_data(**context)
 
 
 def page_not_found_view(request, exception):
     return render(request, 'errors/404.html', status=404)
-
-
-@csrf_exempt
-def create_teacher(request):
-    if request.method == "POST":
-        form = TeacherCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("students:list-teachers"))
-
-    elif request.method == "GET":
-        form = TeacherCreateForm()
-
-    return render(
-        request=request,
-        template_name="students/teacher_create.html",
-        context={"form": form}
-    )
-
-
-def get_teachers(request, selected_id=None):
-    courses = Course.objects.all()
-    if request.GET.get('course_id'):
-        selected_id = request.GET.get('course_id')
-    if not selected_id:
-        selected_id = request.session['selected_id']
-    if selected_id == "all":
-        objects_list = Teacher.objects.all().order_by('-id')
-        selected_name = "All courses"
-    else:
-        objects_list = Teacher.objects.filter(course=selected_id)
-        selected_name = Course.objects.get(id=selected_id).name
-
-    return render(
-        request=request,
-        template_name="students/teacher_table.html",
-        context={"objects_list": objects_list,
-                 "courses": courses,
-                 "selected_id": selected_id,
-                 "selected_name": selected_name
-                 }
-    )
