@@ -33,23 +33,20 @@ class StudentSearchList(ListView):
 
     def get_queryset(self):
 
-        selected_id = self.request.GET.get('course_id', None)
-
+        selected_id = self.request.GET.get('course_id')
         if not selected_id:
             selected_id = self.request.session['selected_id']
-        if selected_id == "all":
-            self.request.session['selected_name'] = "All courses"
-            self.request.session['selected_id'] = "all"
+        if not selected_id or selected_id == "all":
             object_list = Student.objects.all().order_by('-id')
+            self.extra_context['selected_id'] = ''
+            self.request.session['selected_id'] = ''
         else:
-            self.request.session['selected_name'] = Course.objects.get(id=selected_id).name
-            self.request.session['selected_id'] = selected_id
+            self.extra_context['selected_id'] = selected_id
+            self.extra_context['selected_name'] = Course.objects.get(id=selected_id).name
             object_list = Student.objects.filter(course=selected_id)
+            self.request.session['selected_id'] = selected_id
 
-        self.extra_context['selected_id'] = self.request.session['selected_id']
-        self.extra_context['selected_name'] = self.request.session['selected_name']
-
-        search_text = self.request.GET.get('text', None)
+        search_text = self.request.GET.get('text')
         if search_text:
             object_list = object_list.filter(Q(first_name__contains=search_text) | Q(last_name__contains=search_text))
 
