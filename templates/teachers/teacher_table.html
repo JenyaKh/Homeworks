@@ -8,6 +8,7 @@
         {% else %}
         <option selected disabled>Current value: All courses</option>
         {% endif %}
+        <option value="">All courses</option>
         {% for course in courses %}
         <option value={{course.id}}>{{ course }}</option>
         {% endfor %}

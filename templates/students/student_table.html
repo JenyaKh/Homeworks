@@ -2,12 +2,11 @@
 {% load static %}
 {% block content %}
 <form class="d-flex" action="{% url 'students:search' %}" method="get">
-    <select class="form-select" name="course_id">
-        {% if selected_id %}
+      <select class="form-select" name="course_id">
         <option value={{selected_id}} selected disabled>Current value: {{selected_name}}</option>
-        {% else %}
-        <option selected disabled>Current value: All courses</option>
-        {% endif %}
+        {% ifnotequal selected_id "all" %}
+        <option value="all">All courses</option>
+        {% endifnotequal %}
         {% for course in courses %}
         <option value={{course.id}}>{{ course }}</option>
         {% endfor %}

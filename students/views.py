@@ -29,25 +29,27 @@ class StudentList(ListView):
 class StudentSearchList(ListView):
     template_name = 'students/student_table.html'
     model = Student
-    selected_id = None
-    selected_name = None
-    extra_context = {'selected_id': selected_id,
-                     'selected_name': selected_name,
-                     'courses': Course.objects.all()}
+    extra_context = {'courses': Course.objects.all()}
 
     def get_queryset(self):
 
-        selected_id = self.request.GET.get('course_id')
+        selected_id = self.request.GET.get('course_id', None)
+
         if not selected_id:
             selected_id = self.request.session['selected_id']
-        if not selected_id:
+        if selected_id == "all":
+            self.request.session['selected_name'] = "All courses"
+            self.request.session['selected_id'] = "all"
             object_list = Student.objects.all().order_by('-id')
         else:
-            self.selected_id = self.request.session['selected_id'] = selected_id
-            self.selected_name = Course.objects.get(id=selected_id).name
+            self.request.session['selected_name'] = Course.objects.get(id=selected_id).name
+            self.request.session['selected_id'] = selected_id
             object_list = Student.objects.filter(course=selected_id)
 
-        search_text = self.request.GET.get('text')
+        self.extra_context['selected_id'] = self.request.session['selected_id']
+        self.extra_context['selected_name'] = self.request.session['selected_name']
+
+        search_text = self.request.GET.get('text', None)
         if search_text:
             object_list = object_list.filter(Q(first_name__contains=search_text) | Q(last_name__contains=search_text))
 

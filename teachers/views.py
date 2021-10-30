@@ -22,20 +22,17 @@ class TeacherSearchList(ListView):
 
     template_name = 'teachers/teacher_table.html'
     model = Teacher
-    selected_id = None
-    selected_name = None
-    extra_context = {'courses': Course.objects.all(),
-                     'selected_id': selected_id,
-                     'selected_name': selected_name}
+    extra_context = {'courses': Course.objects.all()}
 
     def get_queryset(self):
 
         selected_id = self.request.GET.get('course_id')
         if not selected_id:
             object_list = Teacher.objects.all().order_by('-id')
+            self.extra_context['selected_id'] = ''
         else:
-            self.selected_id = selected_id
-            self.selected_name = Course.objects.get(id=selected_id).name
+            self.extra_context['selected_id'] = selected_id
+            self.extra_context['selected_name'] = Course.objects.get(id=selected_id).name
             object_list = Teacher.objects.filter(course=selected_id)
 
         return object_list
