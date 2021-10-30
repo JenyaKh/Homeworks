@@ -18,21 +18,19 @@ from django.contrib import admin
 from django.urls import path, include
 
 from lms import settings
-from students.views import hello, generate_students, IndexView
+from students.views import IndexView, GenerateStudents, PageNotFound
 from django.conf.urls.static import static
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path('admin/', admin.site.urls),
-    path('hello/', hello),
-    path('generate_students/', generate_students),
-    path('generate_students/count=<int:count>/', generate_students),
+    path('generate_students/', GenerateStudents.as_view()),
     path('students/', include('students.urls')),
     path('teachers/', include('teachers.urls')),
 
 ]
 
-handler404 = 'students.views.page_not_found_view'
+handler404 = PageNotFound.as_view()
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

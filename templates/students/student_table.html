@@ -3,14 +3,15 @@
 {% block content %}
 <form class="d-flex" action="{% url 'students:search' %}" method="get">
     <select class="form-select" name="course_id">
-        <option value={{selected_id}} selected>Current value: {{selected_name}}</option>
-        {% ifnotequal selected_id "all" %}
+        {% if selected_id %}
+        <option value={{selected_id}} selected disabled>Current value: {{selected_name}}</option>
+        {% else %}
+        <option selected disabled>Current value: All courses</option>
+        {% endif %}
         <option value="all">All courses</option>
-        {% endifnotequal %}
         {% for course in courses %}
         <option value={{course.id}}>{{ course }}</option>
         {% endfor %}
-
     </select>
     <button class="btn btn-outline-success" type="submit">Search
     </button>
@@ -62,7 +63,7 @@
             </a>
         </td>
         <td>
-            <a type="button" class="btn btn-danger" href="{% url 'students:delete' pk=student.id %}">Delete
+            <a type="button" class="btn btn-danger" href="{% url 'students:delete' pk=student.id %}" >Delete
             </a>
         </td>
     </tr>

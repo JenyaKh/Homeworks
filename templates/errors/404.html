@@ -4,20 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>
-   body {
-    background: url("{% static 'img/error.jpg' %}") no-repeat;
-    -moz-background-size: 100%; /* Firefox 3.6+ */
-    -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
-    -o-background-size: 100%; /* Opera 9.6+ */
-    background-size: 100%; /* Современные браузеры */
-   }
-
-
-    </style>
 </head>
 <body>
-   <p align="center"><font size="5" color="red" face="Arial"><a href="{% url 'index' %}">Go back</a></p>
+<div align="center">
+    <img alt="404" src="{% static 'img/404.jpg' %}"/>
+    <p><font size="5" color="red" face="Arial"><a href="{% url 'index' %}">Go back</a></font></p>
+</div>
 </body>
 </html>
-
