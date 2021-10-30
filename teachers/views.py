@@ -29,6 +29,7 @@ class TeacherSearchList(ListView):
 
     template_name = 'teachers/teacher_table.html'
     model = Teacher
+    extra_context = {'courses': Course.objects.all()}
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
