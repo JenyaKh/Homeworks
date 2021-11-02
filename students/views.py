@@ -18,9 +18,8 @@ from students.models import Student
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 
-class IndexView(LoginRequiredMixin, TemplateView):
+class IndexView(TemplateView):
     template_name = 'index.html'
-    login_url = reverse_lazy('students:login')
 
 
 class GenerateStudents(LoginRequiredMixin, ListView):
@@ -50,7 +49,7 @@ class StudentSearchList(LoginRequiredMixin, ListView):
 
         selected_id = self.request.GET.get('course_id')
         if not selected_id:
-            selected_id = self.request.session['selected_id']
+            selected_id = self.request.session.get('selected_id', None)
         if not selected_id or selected_id == "all":
             object_list = Student.objects.all().order_by('-id')
             self.extra_context['selected_id'] = ''
