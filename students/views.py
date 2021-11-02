@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.views.decorators.csrf import csrf_exempt
 
 from courses.models import Course
 from students.forms import StudentCreateForm, StudentUpdateForm, RegistrationStudentForm
@@ -131,16 +132,17 @@ def send_email(request):
     return HttpResponse('Done')
 
 
+@csrf_exempt
 def password_reset_request(request):
     if request.method == "POST":
         password_reset_form = PasswordResetForm(request.POST)
         if password_reset_form.is_valid():
             data = password_reset_form.cleaned_data['email']
-            associated_users = User.objects.filter(Q(email=data))
+            associated_users = User.objects.filter(email=data)
             if associated_users.exists():
                 for user in associated_users:
                     subject = "Password Reset Requested"
-                    email_template_name = "registration/password_reset_email.txt"
+                    email_template_name = "registration/password_reset_email.html"
                     c = {
                         "email": user.email,
                         'domain': '127.0.0.1:8000',
