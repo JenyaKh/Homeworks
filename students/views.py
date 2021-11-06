@@ -39,7 +39,7 @@ class StudentList(LoginRequiredMixin, ListView):
     extra_context = {'courses': Course.objects.all()}
     login_url = reverse_lazy('students:login')
 
-
+    
 class StudentSearchList(LoginRequiredMixin, ListView):
     template_name = 'students/student_table.html'
     model = Student
@@ -51,6 +51,7 @@ class StudentSearchList(LoginRequiredMixin, ListView):
         selected_id = self.request.GET.get('course_id')
         if not selected_id:
             selected_id = self.request.session.get('selected_id', None)
+
         if not selected_id or selected_id == "all":
             object_list = Student.objects.all().order_by('-id')
             self.extra_context['selected_id'] = ''
@@ -102,7 +103,7 @@ class StudentDelete(LoginRequiredMixin, DeleteView):
 
 class PageNotFound(TemplateView):
     template_name = 'errors/404.html'
-
+    
 
 class RegistrationStudent(CreateView):
     form_class = RegistrationStudentForm
@@ -161,3 +162,4 @@ def password_reset_request(request):
     password_reset_form = PasswordResetForm()
     return render(request=request, template_name="registration/password_reset.html",
                   context={"password_reset_form": password_reset_form})
+
