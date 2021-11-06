@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
@@ -6,23 +7,33 @@ from teachers.forms import TeacherCreateForm
 from teachers.models import Teacher
 
 
-class TeacherCreate(CreateView):
+class TeacherCreate(LoginRequiredMixin, CreateView):
     form_class = TeacherCreateForm
     template_name = 'teachers/teacher_create.html'
     success_url = reverse_lazy('teachers:list')
+    login_url = reverse_lazy('students:login')
 
 
-class TeacherList(ListView):
+class TeacherList(LoginRequiredMixin, ListView):
     template_name = 'teachers/teacher_table.html'
     model = Teacher
     extra_context = {'courses': Course.objects.all()}
+    login_url = reverse_lazy('students:login')
 
 
-class TeacherSearchList(ListView):
+class TeacherSearchList(LoginRequiredMixin, ListView):
 
     template_name = 'teachers/teacher_table.html'
     model = Teacher
     extra_context = {'courses': Course.objects.all()}
+    login_url = reverse_lazy('students:login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        context['courses'] = Course.objects.all()
+
+        return context
 
     def get_queryset(self):
 

@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div align="center">
+        <p>Logged out!</p>
+
+        <a href="{% url 'students:login' %}">Click here to login again.</a>
+    </div>
+{% endblock %}
