@@ -1,48 +1,59 @@
-from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView, LogoutView
-from django.core.mail import EmailMessage, send_mail, BadHeaderError
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.views.decorators.csrf import csrf_exempt
+from django.utils.http import urlsafe_base64_decode
 
 from courses.models import Course
 from students.forms import StudentCreateForm, StudentUpdateForm, RegistrationStudentForm
-from students.models import Student
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from students.models import Profile
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, RedirectView
+
+from students.services.emails import send_registration_email
+from students.token_generator import TokenGenerator
 
 
 class IndexView(TemplateView):
     template_name = 'index.html'
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.request.session['type'] = None
+        self.request.session['selected_id'] = None
+
 
 class GenerateStudents(LoginRequiredMixin, ListView):
-    model = Student
+    model = Profile
     template_name = 'students/student_table.html'
     login_url = reverse_lazy('students:login')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Student.generate_instances(10)
+        Profile.generate_instances(10)
 
 
 class StudentList(LoginRequiredMixin, ListView):
     template_name = 'students/student_table.html'
-    model = Student
+    model = Profile
     extra_context = {'courses': Course.objects.all()}
     login_url = reverse_lazy('students:login')
+    pk_url_kwarg = 'type'
 
-    
+    def get_queryset(self):
+        object_list = super().get_queryset()
+        profile_type = self.kwargs['type']
+        self.request.session['type'] = profile_type
+        object_list = object_list.filter(type=profile_type)
+        return object_list
+
+
 class StudentSearchList(LoginRequiredMixin, ListView):
     template_name = 'students/student_table.html'
-    model = Student
+    model = Profile
     extra_context = {'courses': Course.objects.all()}
     login_url = reverse_lazy('students:login')
 
@@ -53,18 +64,22 @@ class StudentSearchList(LoginRequiredMixin, ListView):
             selected_id = self.request.session.get('selected_id', None)
 
         if not selected_id or selected_id == "all":
-            object_list = Student.objects.all().order_by('-id')
+            object_list = Profile.objects.all().order_by('-id')
             self.extra_context['selected_id'] = ''
             self.request.session['selected_id'] = ''
         else:
             self.extra_context['selected_id'] = selected_id
             self.extra_context['selected_name'] = Course.objects.get(id=selected_id).name
-            object_list = Student.objects.filter(course=selected_id)
+            object_list = Profile.objects.filter(course=selected_id)
             self.request.session['selected_id'] = selected_id
 
         search_text = self.request.GET.get('text')
         if search_text:
             object_list = object_list.filter(Q(first_name__contains=search_text) | Q(last_name__contains=search_text))
+
+        profile_type = self.request.session.get('type', None)
+        if profile_type:
+            object_list = object_list.filter(type=self.request.session.get('type', None))
 
         return object_list
 
@@ -78,7 +93,7 @@ class StudentCreate(LoginRequiredMixin, CreateView):
 
 class StudentUpdate(LoginRequiredMixin, UpdateView):
     form_class = StudentUpdateForm
-    model = Student
+    model = Profile
     success_url = reverse_lazy('students:list')
     template_name = 'students/student_update.html'
     login_url = reverse_lazy('students:login')
@@ -89,8 +104,23 @@ class StudentUpdate(LoginRequiredMixin, UpdateView):
         return obj
 
 
+class StudentProfile(UpdateView):
+    form_class = StudentUpdateForm
+    model = Profile
+    template_name = 'students/student_update.html'
+    success_url = reverse_lazy('index')
+
+    def get_object(self, queryset=None):
+        user = User.objects.get(pk=self.kwargs['pk'])
+        profiles = Profile.objects.filter(user_id=user.id)
+        for profile in profiles:
+            profile_id = profile.id
+        obj = Profile.objects.get(id=profile_id)
+        return obj
+
+
 class StudentDelete(LoginRequiredMixin, DeleteView):
-    model = Student
+    model = Profile
     success_url = reverse_lazy('students:list')
     template_name = 'students/student_delete.html'
     login_url = reverse_lazy('students:login')
@@ -103,17 +133,19 @@ class StudentDelete(LoginRequiredMixin, DeleteView):
 
 class PageNotFound(TemplateView):
     template_name = 'errors/404.html'
-    
+
 
 class RegistrationStudent(CreateView):
     form_class = RegistrationStudentForm
     template_name = "registration/registration.html"
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('students:sent-email')
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.is_active = False
         self.object.save()
+        send_registration_email(request=self.request,
+                                user_instance=self.object)
         return super().form_valid(form)
 
 
@@ -125,41 +157,28 @@ class LogoutStudent(LogoutView):
     template_name = 'registration/logged_out.html'
 
 
-def send_email(request):
-    email = EmailMessage(subject='Registration from LMS',
-                         body="Test text",
-                         to=['ekhapchenko@gmail.com'])
-    email.send()
-    return HttpResponse('Done')
+class ActivateUser(RedirectView):
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        print(f"uidb64: {uidb64}")
+        print(f"token: {token}")
+
+        try:
+            user_pk = force_bytes(urlsafe_base64_decode(uidb64))
+            current_user = User.objects.get(pk=user_pk)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return HttpResponse("Wrong data")
+
+        if current_user and TokenGenerator().check_token(current_user, token):
+            current_user.is_active = True
+            current_user.save()
+            profile = Profile.objects.get(user_id=current_user.id)
+            self.url = reverse_lazy('students:update', kwargs={'pk': profile.id})
+
+            login(request, current_user)
+            return super().get(request, *args, **kwargs)
+        return HttpResponse("Wrong data")
 
 
-@csrf_exempt
-def password_reset_request(request):
-    if request.method == "POST":
-        password_reset_form = PasswordResetForm(request.POST)
-        if password_reset_form.is_valid():
-            data = password_reset_form.cleaned_data['email']
-            associated_users = User.objects.filter(email=data)
-            if associated_users.exists():
-                for user in associated_users:
-                    subject = "Password Reset Requested"
-                    email_template_name = "registration/password_reset_email.html"
-                    c = {
-                        "email": user.email,
-                        'domain': '127.0.0.1:8000',
-                        'site_name': 'LMS',
-                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                        "user": user,
-                        'token': default_token_generator.make_token(user),
-                        'protocol': 'http',
-                    }
-                    email = render_to_string(email_template_name, c)
-                    try:
-                        send_mail(subject, email, 'admin@example.com', [user.email], fail_silently=False)
-                    except BadHeaderError:
-                        return HttpResponse('Invalid header found.')
-                    return redirect(reverse("password_reset_done"))
-    password_reset_form = PasswordResetForm()
-    return render(request=request, template_name="registration/password_reset.html",
-                  context={"password_reset_form": password_reset_form})
-
+class ActivateSentEmail(TemplateView):
+    template_name = 'emails/activate_email_sent.html'

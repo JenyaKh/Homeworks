@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm, EmailField
 from django.core.validators import ValidationError
-from students.models import Student
+from students.models import Profile
 
 
 class PersonBaseForm(ModelForm):
@@ -48,8 +48,8 @@ class PersonBaseForm(ModelForm):
 
 class StudentCreateForm(PersonBaseForm):
     class Meta:
-        model = Student
-        fields = ['avatar', 'first_name', 'last_name', 'email', 'birthdate',
+        model = Profile
+        fields = ['avatar', 'first_name', 'last_name', 'birthdate',
                   'phone_number', 'resume', 'budget', 'scholarship', 'course']
 
     def clean_birthdate(self):
@@ -73,8 +73,8 @@ class StudentCreateForm(PersonBaseForm):
 
 class StudentUpdateForm(PersonBaseForm):
     class Meta(PersonBaseForm.Meta):
-        model = Student
-        fields = ['avatar', 'first_name', 'last_name', 'email', 'phone_number',
+        model = Profile
+        fields = ['avatar', 'type', 'first_name', 'last_name', 'birthdate', 'phone_number',
                   'resume', 'budget', 'scholarship', 'course']
 
 

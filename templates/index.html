@@ -57,11 +57,10 @@
                         STUDENTS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list'  %}">All students table</a>
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' 'student' %}">All students table</a>
                         </li>
                         <li>
-                            <a class="nav-link" href="{% url 'students:create' %}">Create
-                                student</a>
+
                     </ul>
                 </li>
             </ul>
@@ -72,19 +71,16 @@
                         TEACHERS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'teachers:list' %}">All teachers table</a>
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' 'teacher' %}">All teachers table</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"
-                               href="{% url 'teachers:create' %}">Create
-                                teacher</a>
                     </ul>
                 </li>
             </ul>
         </div>
          <div class="d-flex">
               {% if user.is_authenticated %}
-             <div class="navbar-brand">{{user.get_username}} (You) </div>
+             <a class="navbar-brand" href="{% url 'students:profile' user.id %}"> {{user.get_username}} (You) </a>
               <a class="navbar-brand" href="{% url 'students:logout' %}"> Sign out </a>
              {% else %}
              <a class="navbar-brand" href="{% url 'students:login' %}"> Sign in  /</a>
