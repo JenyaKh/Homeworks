@@ -23,18 +23,24 @@ class Profile(models.Model):
     last_name = models.CharField(
         max_length=80, null=False, validators=[MinLengthValidator(2)]
     )
-    phone_number = PhoneNumberField(unique=True, null=True, )
+    phone_number = PhoneNumberField(unique=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    birthdate = models.DateField(null=True, default=datetime.date.today)
+    birthdate = models.DateField(null=True, blank=True)
     budget = models.BooleanField(null=True)
     scholarship = models.BooleanField(null=True)
     resume = models.FileField(upload_to='documents/', null=True, blank=True,
                               validators=[validators.FileExtensionValidator(['txt', 'pdf', 'docx'],
                                                                             message='file must be txt, docx, pdf')])
     course = models.ForeignKey("courses.Course",
-                               null=True,
+                               null=True, blank=True,
                                on_delete=models.SET_NULL)
     invited = models.IntegerField(default=0, null=True)
+
+    def __str__(self):
+        return f'{self.full_name()} ({self.id})'
+
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
@@ -46,7 +52,8 @@ class Profile(models.Model):
         instance.profile.save()
 
     def age(self):
-        return datetime.datetime.now().year - self.birthdate.year
+        age = datetime.datetime.now().year - self.birthdate.year
+        return age
 
 
 class Invitations(models.Model):

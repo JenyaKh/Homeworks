@@ -9,7 +9,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode
 
 from courses.models import Course
-from students.forms import StudentCreateForm, StudentUpdateForm, RegistrationStudentForm
+from students.forms import StudentUpdateForm, RegistrationStudentForm
 from students.models import Profile
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, RedirectView
 
@@ -84,19 +84,12 @@ class StudentSearchList(LoginRequiredMixin, ListView):
         return object_list
 
 
-class StudentCreate(LoginRequiredMixin, CreateView):
-    form_class = StudentCreateForm
-    template_name = 'students/student_create.html'
-    success_url = reverse_lazy('students:list')
-    login_url = reverse_lazy('students:login')
-
-
 class StudentUpdate(LoginRequiredMixin, UpdateView):
     form_class = StudentUpdateForm
     model = Profile
-    success_url = reverse_lazy('students:list')
     template_name = 'students/student_update.html'
     login_url = reverse_lazy('students:login')
+    success_url = reverse_lazy('index')
 
     def get_object(self, queryset=None):
         obj = super().get_object()
@@ -116,18 +109,19 @@ class StudentProfile(UpdateView):
         for profile in profiles:
             profile_id = profile.id
         obj = Profile.objects.get(id=profile_id)
+        self.extra_context = {'avatar': obj.avatar}
         return obj
 
 
 class StudentDelete(LoginRequiredMixin, DeleteView):
     model = Profile
-    success_url = reverse_lazy('students:list')
     template_name = 'students/student_delete.html'
     login_url = reverse_lazy('students:login')
 
     def get_object(self, queryset=None):
         obj = super().get_object()
         self.extra_context = {'name': obj.full_name()}
+        self.success_url = reverse_lazy('students:list', kwargs={'type': obj.type})
         return obj
 
 
@@ -160,8 +154,6 @@ class LogoutStudent(LogoutView):
 class ActivateUser(RedirectView):
 
     def get(self, request, uidb64, token, *args, **kwargs):
-        print(f"uidb64: {uidb64}")
-        print(f"token: {token}")
 
         try:
             user_pk = force_bytes(urlsafe_base64_decode(uidb64))
