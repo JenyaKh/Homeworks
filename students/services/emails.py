@@ -11,6 +11,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views.decorators.csrf import csrf_exempt
 
+from lms import settings
 from students.token_generator import TokenGenerator
 
 
@@ -30,7 +31,10 @@ def send_registration_email(request, user_instance):
                          to=[user_instance.email],
                          )
     email.content_subtype = 'html'
-    email.send(fail_silently=False)
+    if settings.DEBUG:
+        email.send(fail_silently=False)
+    else:
+        email.send(fail_silently=True)
 
 
 @csrf_exempt
