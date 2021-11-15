@@ -7,7 +7,8 @@ from students.views import StudentDelete, StudentList, StudentSearchList, \
 app_name = 'students'
 
 urlpatterns = [
-    path('list/<str:type>', StudentList.as_view(), name='list'),
+    path('list/<str:type>', StudentList.as_view(), name='list-type'),
+    path('list/', StudentList.as_view(), name='list'),
     path('update/<int:pk>/', StudentUpdate.as_view(), name='update'),
     path('delete/<int:pk>/', StudentDelete.as_view(), name='delete'),
     path('search/', StudentSearchList.as_view(), name='search'),

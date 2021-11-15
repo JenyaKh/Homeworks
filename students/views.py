@@ -22,7 +22,7 @@ class IndexView(TemplateView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.request.session['type'] = 'unknown'
+        self.request.session['type'] = None
         self.request.session['selected_id'] = None
 
 
@@ -45,11 +45,17 @@ class StudentList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         object_list = super().get_queryset()
-        profile_type = self.kwargs['type']
-        self.request.session['type'] = profile_type
-        if profile_type != 'unknown':
-            object_list = object_list.filter(type=profile_type)
-
+        profile_type = None
+        if self.kwargs.get('type', None):
+            profile_type = self.kwargs['type']
+        if not profile_type:
+            profile_type = self.request.session.get('type')
+        if profile_type:
+            if profile_type != 'all':
+                object_list = object_list.filter(type=profile_type)
+                self.request.session['type'] = profile_type
+            else:
+                self.request.session['type'] = None
         return object_list
 
 
@@ -79,8 +85,9 @@ class StudentSearchList(LoginRequiredMixin, ListView):
         if search_text:
             object_list = object_list.filter(Q(first_name__contains=search_text) | Q(last_name__contains=search_text))
 
-        profile_type = self.request.session.get('type', 'unknown')
-        if profile_type != 'unknown':
+        profile_type = self.request.session.get('type')
+        print(profile_type)
+        if profile_type:
             object_list = object_list.filter(type=profile_type)
 
         return object_list
@@ -91,12 +98,12 @@ class StudentUpdate(LoginRequiredMixin, UpdateView):
     model = Profile
     template_name = 'students/student_update.html'
     login_url = reverse_lazy('students:login')
+    success_url = reverse_lazy('students:list')
 
     def get_object(self, queryset=None):
         obj = super().get_object()
         self.extra_context = {'avatar': obj.avatar}
-        self.success_url = reverse_lazy('students:list',
-                                        kwargs={'type': self.request.session.get('type', 'unknown')})
+
         return obj
 
 
@@ -104,6 +111,7 @@ class StudentProfile(UpdateView):
     form_class = StudentUpdateForm
     model = Profile
     template_name = 'students/student_update.html'
+    success_url = reverse_lazy('students:list')
 
     def get_object(self, queryset=None):
         user = User.objects.get(pk=self.kwargs['pk'])
@@ -112,8 +120,7 @@ class StudentProfile(UpdateView):
             profile_id = profile.id
         obj = Profile.objects.get(id=profile_id)
         self.extra_context = {'avatar': obj.avatar}
-        self.success_url = reverse_lazy('students:list',
-                                        kwargs={'type': self.request.session.get('type', 'unknown')})
+
         return obj
 
 
@@ -121,12 +128,12 @@ class StudentDelete(LoginRequiredMixin, DeleteView):
     model = Profile
     template_name = 'students/student_delete.html'
     login_url = reverse_lazy('students:login')
+    success_url = reverse_lazy('students:list')
 
     def get_object(self, queryset=None):
         obj = super().get_object()
         self.extra_context = {'name': obj.full_name()}
-        self.success_url = reverse_lazy('students:list',
-                                        kwargs={'type': self.request.session.get('type', 'unknown')})
+
         return obj
 
 

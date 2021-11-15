@@ -57,7 +57,7 @@
                         STUDENTS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' 'student' %}">All students table</a>
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list-type' 'student' %}">All students table</a>
                         </li>
                         <li>
 
@@ -71,12 +71,18 @@
                         TEACHERS
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list' 'teacher' %}">All teachers table</a>
+                        <li><a class="nav-link active" aria-current="page" href="{% url 'students:list-type' 'teacher' %}">All teachers table</a>
                         </li>
                         <li class="nav-item">
                     </ul>
                 </li>
             </ul>
+                    <a class="navbar-brand" href="{% url 'students:list-type' 'all' %}">ALL USERS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse" aria-controls="navbarCollapse"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         </div>
          <div class="d-flex">
               {% if user.is_authenticated %}
