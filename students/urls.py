@@ -1,14 +1,14 @@
 from django.urls import path
 
 from students.services.emails import password_reset_request
-from students.views import StudentCreate, StudentUpdate, StudentDelete, StudentList, StudentSearchList, \
-    RegistrationStudent, UserLogin, LogoutStudent, ActivateUser, ActivateSentEmail, StudentProfile
+from students.views import StudentDelete, StudentList, StudentSearchList, \
+    RegistrationStudent, UserLogin, LogoutStudent, ActivateUser, ActivateSentEmail, StudentProfile, StudentUpdate
 
 app_name = 'students'
 
 urlpatterns = [
-    path('list/<str:type>', StudentList.as_view(), name='list'),
-    path('create/', StudentCreate.as_view(), name='create'),
+    path('list/<str:type>', StudentList.as_view(), name='list-type'),
+    path('list/', StudentList.as_view(), name='list'),
     path('update/<int:pk>/', StudentUpdate.as_view(), name='update'),
     path('delete/<int:pk>/', StudentDelete.as_view(), name='delete'),
     path('search/', StudentSearchList.as_view(), name='search'),

@@ -34,7 +34,8 @@
     <tbody>
     {% for student in object_list %}
     <tr>
-        <th scope="row">{{ student.id }}</th>
+        <th scope="row">{{ student.id }}
+        </th>
         <td>
             {% if student.avatar %}
             <img src="{{ student.avatar.url }}" width='60' height='60' alt='avatar'>
@@ -55,12 +56,17 @@
             {% endif %}
         </td>
         <td>
-            <a type="button" class="btn btn-success" href="{% url 'students:update' pk=student.id %}">Update
+          <a type="button" class="btn btn-success" href="{% url 'students:update' pk=student.id %}">Update
             </a>
         </td>
         <td>
+            {% if user.id != student.user_id %}
             <a type="button" class="btn btn-danger" href="{% url 'students:delete' pk=student.id %}" >Delete
             </a>
+            {% else %}
+            <a type="button" class="btn btn-danger" href="" >It is you!
+            </a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
