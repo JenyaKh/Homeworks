@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "django_inlinecss",
     'students',
+    'social_django',
     'django_extensions',
     'crispy_forms',
     'courses',
@@ -53,8 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
-
+AUTH_USER_MODEL = 'students.CustomUser'
 ROOT_URLCONF = 'lms.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
@@ -70,11 +72,28 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media'
+                'django.template.context_processors.media',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_GITHUB_KEY = 'bea5e27ad8a6e7eb46d3'
+SOCIAL_AUTH_GITHUB_SECRET = 'c0500f263ad642ea3716e8c82d9e475f8dc61bc3'
 
 WSGI_APPLICATION = 'lms.wsgi.application'
 

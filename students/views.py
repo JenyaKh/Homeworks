@@ -1,6 +1,5 @@
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Q
 from django.http import HttpResponse
@@ -10,7 +9,7 @@ from django.utils.http import urlsafe_base64_decode
 
 from courses.models import Course
 from students.forms import StudentCreateForm, StudentUpdateForm, RegistrationStudentForm
-from students.models import Profile
+from students.models import Profile, CustomUser
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, RedirectView
 
 from students.services.emails import send_registration_email
@@ -111,7 +110,7 @@ class StudentProfile(UpdateView):
     success_url = reverse_lazy('index')
 
     def get_object(self, queryset=None):
-        user = User.objects.get(pk=self.kwargs['pk'])
+        user = CustomUser.objects.get(pk=self.kwargs['pk'])
         profiles = Profile.objects.filter(user_id=user.id)
         for profile in profiles:
             profile_id = profile.id
@@ -165,8 +164,8 @@ class ActivateUser(RedirectView):
 
         try:
             user_pk = force_bytes(urlsafe_base64_decode(uidb64))
-            current_user = User.objects.get(pk=user_pk)
-        except (User.DoesNotExist, ValueError, TypeError):
+            current_user = CustomUser.objects.get(pk=user_pk)
+        except (CustomUser.DoesNotExist, ValueError, TypeError):
             return HttpResponse("Wrong data")
 
         if current_user and TokenGenerator().check_token(current_user, token):
