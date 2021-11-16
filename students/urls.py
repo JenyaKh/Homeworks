@@ -1,19 +1,24 @@
 from django.urls import path
 
-from students.views import StudentCreate, StudentUpdate, StudentDelete, StudentList, StudentSearchList, \
-    RegistrationStudent, UserLogin, LogoutStudent, send_email, password_reset_request
+from students.services.emails import password_reset_request
+from students.views import StudentDelete, StudentList, StudentSearchList, \
+    RegistrationStudent, UserLogin, LogoutStudent, ActivateUser, ActivateSentEmail, StudentProfile, StudentUpdate
 
 app_name = 'students'
 
 urlpatterns = [
-    path('', StudentList.as_view(), name='list'),
-    path('create/', StudentCreate.as_view(), name='create'),
+    path('list/<str:type>', StudentList.as_view(), name='list-type'),
+    path('list/', StudentList.as_view(), name='list'),
     path('update/<int:pk>/', StudentUpdate.as_view(), name='update'),
     path('delete/<int:pk>/', StudentDelete.as_view(), name='delete'),
     path('search/', StudentSearchList.as_view(), name='search'),
     path('registration/', RegistrationStudent.as_view(), name='registration'),
     path('login/', UserLogin.as_view(), name='login'),
     path("logout/", LogoutStudent.as_view(), name="logout"),
-    path('send_email/', send_email, name='send_email'),
-    path("password_reset/", password_reset_request, name="password_reset")
+    path("password_reset/", password_reset_request, name="password_reset"),
+    path('activate/<str:uidb64>/<str:token>', ActivateUser.as_view(),
+         name='activate'),
+    path('activate/sent', ActivateSentEmail.as_view(), name='sent-email'),
+    path('profile/<int:pk>/', StudentProfile.as_view(), name='profile'),
+
 ]

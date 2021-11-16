@@ -3,9 +3,9 @@
 
 
 {% block content %}
-<form method="post" >
+<form method="post" enctype= multipart/form-data>
     {% csrf_token %}
-     {% if student.avatar %}
+     {% if avatar %}
             <img src="{{ avatar.url }}" width='60' height='60' alt='avatar'>
             {% else %}
             <p>No image</p>

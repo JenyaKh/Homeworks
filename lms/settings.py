@@ -37,10 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_inlinecss",
     'students',
     'django_extensions',
     'crispy_forms',
-    'teachers',
     'courses',
 
 ]
@@ -92,8 +92,8 @@ DATABASES = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'students.lms.2@gmail.com'
-EMAIL_HOST_PASSWORD = "cqmjwtzowykqnkoc"
+EMAIL_HOST_USER = 'lms.hillel@gmail.com'
+EMAIL_HOST_PASSWORD = "gjztnuhbnjzpjzue"
 EMAIL_PORT = 587
 
 # Password validation
