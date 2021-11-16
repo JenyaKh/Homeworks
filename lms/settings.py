@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.urls import reverse_lazy
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -88,8 +90,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
+LOGIN_URL = reverse_lazy('students:login')
+LOGOUT_URL = reverse_lazy('students:logout')
 LOGIN_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_GITHUB_KEY = 'bea5e27ad8a6e7eb46d3'

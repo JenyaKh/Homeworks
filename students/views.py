@@ -179,7 +179,7 @@ class ActivateUser(RedirectView):
             profile = Profile.objects.get(user_id=current_user.id)
             self.url = reverse_lazy('students:update', kwargs={'pk': profile.id})
 
-            login(request, current_user)
+            login(request, current_user, backend='django.contrib.auth.backends.ModelBackend')
             return super().get(request, *args, **kwargs)
         return HttpResponse("Wrong data")
 
