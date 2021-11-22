@@ -16,6 +16,8 @@ phonenumbers = "*"
 pillow = "*"
 django-inlinecss = "*"
 social-auth-app-django = "*"
+django-admin-shortcuts = "*"
+django-admin-interface = "*"
 
 [dev-packages]
 
