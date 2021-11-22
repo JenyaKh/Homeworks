@@ -47,7 +47,9 @@
         <td>{{ student.last_name }}</td>
         <td>{{ student.type }}</td>
         <td>{{ student.phone_number }}</td>
-        <td>{{ student.course }}</td>
+        <td>{% for course in student.course.all %}
+            {{ course}}
+            {% endfor %}</td>
         <td>
             {% if student.resume %}
             <a href="/media/{{ student.resume }}" download>Download</a>
