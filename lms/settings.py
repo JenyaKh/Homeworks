@@ -34,7 +34,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'admin_interface',
-    'admin_shortcuts',
     'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
