@@ -15,6 +15,7 @@ django-phonenumber-field = "*"
 phonenumbers = "*"
 pillow = "*"
 django-inlinecss = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
 

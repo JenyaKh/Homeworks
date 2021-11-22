@@ -25,6 +25,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path('admin/', admin.site.urls),
+    path('oauth/', include('social_django.urls', namespace='social')),
     path('generate_students/', GenerateStudents.as_view()),
     path('students/', include('students.urls')),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

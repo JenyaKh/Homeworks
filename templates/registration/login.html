@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
     <div>
@@ -10,6 +11,9 @@
             <input class="btn btn-success" type="submit" value="Sign in"/>
         </form>
         <br>
-        <p><a href="{% url 'students:password_reset' %}">Forgot password?</a></p>
+        <a href="{% url 'social:begin' 'github' %}"><img alt="github" class="img-fluid" width=25 src="{% static 'img/github.png' %}"/>
+        Login with GitHub</a><br>
+        <br>
+        <p> <a href="{% url 'students:password_reset' %}">Forgot password?</a></p>
     </div>
 {% endblock %}
